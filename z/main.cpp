@@ -39,6 +39,21 @@ int cargo[6][7];
 6 - true position
 */
 
+int check_stay(int first_cargo, int second_cargo)
+{
+    if(cargo[first_cargo][1] == 2 && cargo[second_cargo][1] != 1)
+    {
+        return 0;
+    }
+    else if(cargo[second_cargo][1] == 2)
+    {
+        return 0;
+    }
+    else
+    {
+        return 1;
+    }
+}
 void read_color()
 {
     for(int i = 0; i < 6; i++)
@@ -109,12 +124,22 @@ void true_position()
     }
 }
 
-int find_cargo(int destination)
+int find_cargo(int destination, int destinationZ)
 {
     int i = 0;
-    for(i = 0; cargo[i][3] != destination; i++);
-    return i;
-
+    while((cargo[i][3] != destination || cargo[i][4] != destinationZ) && i < 6) i++;
+    return i < 6 ? i : -1;
+}
+int check_number_of_cargo_on_pos(int destination)
+{
+    int i = 0;
+    int n = 0;
+    while(i < 6)
+        {
+            n += (cargo[i][3] == destination) ? 1 : 0;
+            i++;
+        }
+    return n;
 }
 
 void graphing()
@@ -158,7 +183,7 @@ void graphing()
         graph_size[i]++;
         for(int i1 = 1; cargo[first_cargo][3] != cargo[graphs[i][i1 - 1]][2]; i1++)
         {
-            last_cargo = find_cargo(cargo[graphs[i][i1 - 1]][2]);
+            last_cargo = find_cargo(cargo[graphs[i][i1 - 1]][2],0);
             graphs[i][i1] = last_cargo;
             unused_cargo[last_cargo] = 0;
             amount_of_unused_cargo --;
@@ -233,25 +258,55 @@ int true_position_for_cycle()
     return ret;
 }
 
-void movement(int cargo_for_movement, int x, int z)
+void movement(int cargo_for_movement, int x)
 {
-    cargo[cargo_for_movement][3] = x;
-    cargo[cargo_for_movement][4] = z;
-    if(z == 1)
+    if(cargo[cargo_for_movement][5] == -1)
     {
-        cargo[find_cargo(cargo[cargo_for_movement][3])][5] = cargo_for_movement;
+    if(check_number_of_cargo_on_pos(x) == 0)
+    {
+        cargo[cargo_for_movement][3] = x;
+        cargo[cargo_for_movement][4] = 0;
     }
-    for(int i = 0; i < 6; i++)
+    else if(check_number_of_cargo_on_pos(x) == 1)
     {
-        if(cargo[i][5] != -1)
+        if(check_stay(cargo_for_movement, find_cargo(x,0)) == 1)
         {
-            if(cargo[cargo[i][5]][3] != cargo[i][3] && cargo[cargo[i][5]][4] != 1 && cargo[i][4] != 0)
-            {
-                cargo[i][5] = -1;
-            }
+        cargo[find_cargo(x,0)][5] = cargo_for_movement;
+        cargo[cargo_for_movement][3] = x;
+        cargo[cargo_for_movement][4] = 1;
         }
     }
     true_position();
+    }
+}
+int findCargoForStaying(int cargoForMovement)
+{
+    for(int i = 0; i < 6; i++)
+    {
+        check_stay(cargoForMovement, i);
+        return i;
+    }
+}
+int findCargoByTypeInGraph(int type, int graph)
+{
+    for(int i = 0; i<6;i++);
+    {
+        if()
+        {
+
+        }
+    }
+}
+
+int findCargoByTypeInGraph(int type, int graph)
+{
+    for(int i = 0; i<6;i++);
+    {
+        if()
+        {
+
+        }
+    }
 }
 
 int main()
@@ -261,15 +316,12 @@ int main()
     true_position();
     graphing();
     write();
-    while(!true_position_for_cycle())
+    for(int i = 0; i < 3; i++)
     {
-        for(int i = 0; i < 6; i++)
+        if(graph_amount_cubes[i] == 4)
         {
-            movement(i, cargo[i][2], 0);
-            graphing();
-            write();
+            int  = findCargoForStaying()
         }
+        return 0;
     }
-    write();
-    return 0;
 }

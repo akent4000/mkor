@@ -2,7 +2,7 @@
 using namespace std;
 
 int      color[6] = {3, 2, 1, 4, 6, 5};
-int true_color[6] = {6, 1, 3, 4, 2, 5};
+int true_color[6] = {5, 1, 3, 4, 2, 6};
 
 int graphs[3][6];
 int graph_size[3];
@@ -115,6 +115,10 @@ int find_cargo(int destination)
 
 void graphing()
 {
+    for(int i = 0; i < 3; i++)
+    {
+        graph_size[i] = 0;
+    }
     true_position();
     int unused_cargo[6] = {1, 1, 1, 1, 1, 1};
     int amount_of_unused_cargo = 6;
@@ -156,35 +160,43 @@ void graphing()
     }
 }
 
+void write()
+{
+    printf("Cargo mas:\n");
+    for(int i = 0; i < 6; i++)
+    {
+        printf("%d: | ", i);
+        for(int i1 = 0; i1 < 7; i1++)
+        {
+            printf("%d | ", cargo[i][i1]);
+        }
+        printf("\n");
+    }
+
+    printf("\nGraphs mas:\n");
+    for(int i = 0; i < 3; i++)
+    {
+        printf("%d: | ", i);
+        for(int i1 = 0; i1 < 6; i1++)
+        {
+            printf("%d | ", cargo[i][i1]);
+        }
+        printf("Size = %d\n", graph_size[i]);
+    }
+
+
+}
+
 int main()
 {
     read_color();
     read_true_color();
     true_position();
-
-    for(int i = 0; i < 6; i++)
-    {
-        for(int i1 = 0; i1 < 7; i1++)
-        {
-            printf("%d  ", cargo[i][i1]);
-        }
-        printf("\n");
-    }
-    printf("\n");
     graphing();
+    write();
+    write();
+    write();
+    write();write();write();write();write();write();write();write();write();write();write();write();write();write();write();write();write();write();
 
-    for(int i = 0; i < 3; i++)
-    {
-        for(int i1 = 0; i1 < 6; i1++)
-        {
-            printf("%d  ", graphs[i][i1]);
-        }
-        printf("\n");
-    }
-
-    for(int i = 0; i < 3; i++)
-    {
-        printf("   %d   ", graph_size[i]);
-    }
     return 0;
 }

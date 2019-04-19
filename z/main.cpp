@@ -29,7 +29,7 @@ int cargo[6][7];
 
 3 - x position
 
-4 - y position
+4 - z position
     0 - below
     1 - on top
 
@@ -212,10 +212,46 @@ void write()
         {
             printf("%d | ", graphs[i][i1]);
         }
-        printf("Size = %d, Amount cubes = %d, Amount simple cubes = %d, Amount cubes with hole = %d, Amount balls = %d\n", graph_size[i], graph_amount_cubes[i], graph_amount_cube_simple[i], graph_amount_cube_holl[i], graph_amount_ball[i]);
+        printf("Size = %d, Amount cubes = %d, Amount simple cubes = %d, Amount cubes with hole = %d, Amount balls = %d\n\n", graph_size[i], graph_amount_cubes[i], graph_amount_cube_simple[i], graph_amount_cube_holl[i], graph_amount_ball[i]);
     }
 
 
+}
+
+int true_position_for_cycle()
+{
+    true_position();
+    int ret = 1;
+    for(int i = 0; i < 6; i++)
+    {
+        if(cargo[i][6] == 0)
+        {
+            ret = 0;
+            return ret;
+        }
+    }
+    return ret;
+}
+
+void movement(int cargo_for_movement, int x, int z)
+{
+    cargo[cargo_for_movement][3] = x;
+    cargo[cargo_for_movement][4] = z;
+    if(z == 1)
+    {
+        cargo[find_cargo(cargo[cargo_for_movement][3])][5] = cargo_for_movement;
+    }
+    for(int i = 0; i < 6; i++)
+    {
+        if(cargo[i][5] != -1)
+        {
+            if(cargo[cargo[i][5]][3] != cargo[i][3] && cargo[cargo[i][5]][4] != 1 && cargo[i][4] != 0)
+            {
+                cargo[i][5] = -1;
+            }
+        }
+    }
+    true_position();
 }
 
 int main()
@@ -224,6 +260,16 @@ int main()
     read_true_color();
     true_position();
     graphing();
+    write();
+    while(!true_position_for_cycle())
+    {
+        for(int i = 0; i < 6; i++)
+        {
+            movement(i, cargo[i][2], 0);
+            graphing();
+            write();
+        }
+    }
     write();
     return 0;
 }

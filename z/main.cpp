@@ -6,6 +6,10 @@ int true_color[6] = {3, 4, 2, 1, 6, 5};
 
 int graphs[3][6];
 int graph_size[3];
+int graph_amount_ball[3];
+int graph_amount_cubes[3];
+int graph_amount_cube_simple[3];
+int graph_amount_cube_holl[3];
 int cargo[6][7];
 /*
 0 - color
@@ -118,6 +122,10 @@ void graphing()
     for(int i = 0; i < 3; i++)
     {
         graph_size[i] = 0;
+        graph_amount_ball[i] = 0;
+        graph_amount_cubes[i] = 0;
+        graph_amount_cube_holl[i] = 0;
+        graph_amount_cube_simple[i] = 0;
     }
     true_position();
     int unused_cargo[6] = {1, 1, 1, 1, 1, 1};
@@ -157,6 +165,30 @@ void graphing()
             graph_size[i]++;
         }
     }
+
+    for(int i = 0; i < 3; i++)
+    {
+        for(int i1 = 0; i1 < 6; i1++)
+        {
+            if(graphs[i][i1] != -1)
+            {
+                switch(cargo[graphs[i][i1]][1])
+                {
+                case 0:
+                    graph_amount_cubes[i]++;
+                    graph_amount_cube_simple[i]++;
+                    break;
+                case 1:
+                    graph_amount_cubes[i]++;
+                    graph_amount_cube_holl[i]++;
+                    break;
+                case 2:
+                    graph_amount_ball[i]++;
+                    break;
+                }
+            }
+        }
+    }
 }
 
 void write()
@@ -180,7 +212,7 @@ void write()
         {
             printf("%d | ", graphs[i][i1]);
         }
-        printf("Size = %d\n", graph_size[i]);
+        printf("Size = %d, Amount cubes = %d, Amount simple cubes = %d, Amount cubes with hole = %d, Amount balls = %d\n", graph_size[i], graph_amount_cubes[i], graph_amount_cube_simple[i], graph_amount_cube_holl[i], graph_amount_ball[i]);
     }
 
 

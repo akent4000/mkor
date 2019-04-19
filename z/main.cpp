@@ -260,23 +260,23 @@ int true_position_for_cycle()
 
 void movement(int cargo_for_movement, int x)
 {
-    if(cargo[cargo_for_movement][5] == -1)
+    if(cargo[cargo_for_movement][5] == -1 && cargo[cargo_for_movement][3] != x)
     {
-    if(check_number_of_cargo_on_pos(x) == 0)
-    {
-        cargo[cargo_for_movement][3] = x;
-        cargo[cargo_for_movement][4] = 0;
-    }
-    else if(check_number_of_cargo_on_pos(x) == 1)
-    {
-        if(check_stay(cargo_for_movement, find_cargo(x,0)) == 1)
+        if(check_number_of_cargo_on_pos(x) == 0)
         {
-        cargo[find_cargo(x,0)][5] = cargo_for_movement;
-        cargo[cargo_for_movement][3] = x;
-        cargo[cargo_for_movement][4] = 1;
+            cargo[cargo_for_movement][3] = x;
+            cargo[cargo_for_movement][4] = 0;
         }
-    }
-    true_position();
+        else if(check_number_of_cargo_on_pos(x) == 1)
+        {
+            if(check_stay(cargo_for_movement, find_cargo(x,0)) == 1)
+            {
+                cargo[find_cargo(x,0)][5] = cargo_for_movement;
+                cargo[cargo_for_movement][3] = x;
+                cargo[cargo_for_movement][4] = 1;
+            }
+        }
+        true_position();
     }
 }
 int findCargoForStaying(int cargoForMovement)
@@ -289,24 +289,26 @@ int findCargoForStaying(int cargoForMovement)
 }
 int findCargoByTypeInGraph(int type, int graph)
 {
-    for(int i = 0; i<6;i++);
+    for(int i = 0; i<6;i++)
     {
-        if()
+        if(0)
         {
 
         }
     }
+    return 0;
 }
 
-int findCargoByTypeInGraph(int type, int graph)
+int findCargoByTypeInGraph1(int type, int graph)
 {
-    for(int i = 0; i<6;i++);
+    for(int i = 0; i<6;i++)
     {
-        if()
+        if(0)
         {
 
         }
     }
+    return 0;
 }
 
 int main()
@@ -320,7 +322,7 @@ int main()
     {
         if(graph_amount_cubes[i] == 4)
         {
-            int  = findCargoForStaying()
+//            int  = findCargoForStaying()
         }
         return 0;
     }

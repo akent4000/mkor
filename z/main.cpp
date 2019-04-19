@@ -1,8 +1,8 @@
 #include <stdio.h>
 using namespace std;
 
-int      color[6] = {3, 2, 1, 4, 6, 5};
-int true_color[6] = {5, 1, 3, 4, 2, 6};
+int      color[6] = {1, 5, 3, 2, 4, 6};
+int true_color[6] = {3, 4, 2, 1, 6, 5};
 
 int graphs[3][6];
 int graph_size[3];
@@ -141,7 +141,6 @@ void graphing()
             amount_of_unused_cargo--;
         }
     }
-
     for(int i = 0; i < 3 && amount_of_unused_cargo > 0; i++)
     {
         for(first_cargo = 0; first_cargo <  6 && unused_cargo[first_cargo] == 0; first_cargo++);
@@ -179,7 +178,7 @@ void write()
         printf("%d: | ", i);
         for(int i1 = 0; i1 < 6; i1++)
         {
-            printf("%d | ", cargo[i][i1]);
+            printf("%d | ", graphs[i][i1]);
         }
         printf("Size = %d\n", graph_size[i]);
     }
@@ -194,9 +193,5 @@ int main()
     true_position();
     graphing();
     write();
-    write();
-    write();
-    write();write();write();write();write();write();write();write();write();write();write();write();write();write();write();write();write();write();
-
     return 0;
 }

@@ -1,8 +1,8 @@
 #include <stdio.h>
 using namespace std;
 
-int      color[6] = {1, 5, 3, 2, 4, 6};
-int true_color[6] = {3, 4, 2, 1, 6, 5};
+int      color[6] = {5, 1, 3, 4, 2, 6};
+int true_color[6] = {1, 2, 3, 4, 5, 6};
 
 int graphs[3][6];
 int graph_size[3];
@@ -16,9 +16,9 @@ int cargo[6][7];
     1 - black
     2 - blue
     3 - green
-    4 - yellow
+    4 - yellow ball
     5 - red
-    6 - white
+    6 - white ball
 
 1 - type
     0 - cube
@@ -262,6 +262,7 @@ void movement(int cargo_for_movement, int x)
 {
     if(cargo[cargo_for_movement][5] == -1 && cargo[cargo_for_movement][3] != x)
     {
+        int oldX = cargo[cargo_for_movement][3];
         if(check_number_of_cargo_on_pos(x) == 0)
         {
             cargo[cargo_for_movement][3] = x;
@@ -276,6 +277,10 @@ void movement(int cargo_for_movement, int x)
                 cargo[cargo_for_movement][4] = 1;
             }
         }
+        if(check_number_of_cargo_on_pos(oldX) == 1)
+            {
+                cargo[find_cargo(oldX,0)][5] = -1;
+            }
         true_position();
     }
 }
@@ -286,31 +291,85 @@ int findCargoForStaying(int cargoForMovement)
         check_stay(cargoForMovement, i);
         return i;
     }
+    return -1;
 }
-int findCargoByTypeInGraph(int type, int graph)
+int findGraphByCargo(int cargoForSearch)
+{
+    for(int i = 0; i < 3; i++)
+    {
+        for(int k = 0; k < 6; k++)
+        {
+            if(graphs[i][k] == cargoForSearch) return i;
+        }
+    }
+    return -1;
+}
+int findCargoByTypeInGraph(int type, int graph, int excludeDes, int excludeX)
 {
     for(int i = 0; i<6;i++)
     {
-        if(0)
+        if(cargo[i][1] == type && findGraphByCargo(i) == graph && cargo[i][3] != excludeDes && cargo[i][3] != excludeX)
         {
-
+            return i;
         }
     }
-    return 0;
+    return -1;
 }
 
-int findCargoByTypeInGraph1(int type, int graph)
+int findCargoByNotTypeInGraph(int type, int graph, int excludeDes, int excludeX)
+{
+    for(int i = 0; i < 6;i++)
+    {
+        if(cargo[i][1] != type && findGraphByCargo(i) == graph && cargo[i][3] != excludeDes && cargo[i][3] != excludeX)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int findCargoByTypeNotInGraph(int type, int graph)
 {
     for(int i = 0; i<6;i++)
     {
-        if(0)
+        if(cargo[i][1] == type && findGraphByCargo(i) != graph)
         {
-
+            return i;
         }
     }
-    return 0;
+    return -1;
 }
-
+int findCargoByNotTypeNotInGraph(int type, int graph)
+{
+    for(int i = 0; i<6;i++)
+    {
+        if(cargo[i][1] != type && findGraphByCargo(i) != graph)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+int findCargoByDestination(int destination)
+{
+    for(int i = 0; i < 6; i++)
+    {
+        if(cargo[i][2] == destination)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+int checkCargo()
+{
+    int n = 0;
+    for(int i = 0; i < 6; i++)
+    {
+        n += cargo[i][3] == cargo[i][2] && cargo[i][4] == 0 ? 1 : 0;
+    }
+    return n == 6 ? 1 : 0;
+}
 int main()
 {
     read_color();
@@ -318,12 +377,60 @@ int main()
     true_position();
     graphing();
     write();
+    while(checkCargo() == 0)
+    {
     for(int i = 0; i < 3; i++)
     {
         if(graph_amount_cubes[i] == 4)
         {
-//            int  = findCargoForStaying()
+            int cargoForMove = findCargoByTypeInGraph(1,i, -1, -1);
+            int cargoForStay = findCargoByTypeInGraph(1,i, cargo[cargoForMove][2], cargo[cargoForMove][3]);
+            int cargoForRemove = find_cargo(cargo[cargoForMove][2],0);
+            int oldX = cargo[cargoForMove][3];
+            int newX = cargo[cargoForRemove][3];
+            int middleX = cargo[cargoForStay][3];
+            movement(cargoForMove, middleX);
+            write();
+            movement(cargoForRemove, oldX);
+            write();
+            movement(cargoForMove, newX);
+            write();
         }
-        return 0;
+        else if(graph_amount_ball[i] == 2)
+        {
+            int cargoForMove1 = findCargoByTypeInGraph(2,i,-1,-1);
+            int cargoForMove2 = findCargoByTypeInGraph(2,i,cargo[cargoForMove1][3],-1);
+            int cargoForStay = findCargoByTypeNotInGraph(1,i);
+            int X1 = cargo[cargoForMove1][3];
+            int X2 = cargo[cargoForMove2][3];
+            int middleX = cargo[cargoForStay][3];
+            printf("1: %d 2: %d 3: %d",cargoForMove1,cargoForMove2,cargoForStay);
+            movement(cargoForMove1, middleX);
+            write();
+            movement(cargoForMove2, X1);
+            write();
+            movement(cargoForMove1, X2);
+            write();
+        }
+        else if(graph_size[i] != 0)
+        {
+            int cargoForStay = findCargoByNotTypeNotInGraph(2,i);
+            int cargoForMoveOut = findCargoByNotTypeInGraph(2,i,-1,-1);
+            int currentDestinstion = cargo[cargoForMoveOut][3];
+            movement(cargoForMoveOut, cargo[cargoForStay][3]);
+            while(findCargoByDestination(currentDestinstion) != cargoForMoveOut)
+            {
+                int cargoForMove = findCargoByDestination(currentDestinstion);
+                int temp = cargo[cargoForMove][3];
+                movement(cargoForMove, cargo[cargoForMove][2]);
+                currentDestinstion = temp;
+                write();
+            }
+            movement(cargoForMoveOut, cargo[cargoForMoveOut][2]);
+        }
+        graphing();
     }
+    }
+    write();
+    return 0;
 }

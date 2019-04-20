@@ -1,8 +1,8 @@
 #include <stdio.h>
 using namespace std;
 
-int      color[6] = {5, 1, 3, 4, 2, 6};
-int true_color[6] = {1, 2, 3, 4, 5, 6};
+int      color[6] = {5, 4, 2, 1, 3, 6};
+int true_color[6] = {2, 6, 5, 3, 4, 1};
 
 int graphs[3][6];
 int graph_size[3];
@@ -396,7 +396,7 @@ int main()
             movement(cargoForMove, newX);
             write();
         }
-        else if(graph_amount_ball[i] == 2)
+        else if(graph_amount_ball[i] == 2 && graph_size[i] == 2)
         {
             int cargoForMove1 = findCargoByTypeInGraph(2,i,-1,-1);
             int cargoForMove2 = findCargoByTypeInGraph(2,i,cargo[cargoForMove1][3],-1);

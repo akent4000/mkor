@@ -369,7 +369,7 @@ int checkCargo()
     }
     return n == 6 ? 1 : 0;
 }
-int main()
+task main()
 {
     read_color();
     read_true_color();
@@ -431,5 +431,4 @@ int main()
     }
     }
     write();
-    return 0;
 }

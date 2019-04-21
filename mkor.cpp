@@ -87,9 +87,9 @@ void setPositionX(int x)
 	int pos;
 	//float distances[6] = {36.0,-6.0,-48.0,-90.0,-132.0,-174.0};
 	//pos = (int)((distances[x]/3.1)* 22.5 * (5.0 / 3.0));
-	int distances[6] = {443,-74,-582,-1065,-1579,-2097};
+	int distances[6] = {443,-74,-582,-1065,-1579,-2090};
 	pos = distances[x];
-	setMotorTarget(width, pos, 20);
+	setMotorTarget(width, pos, 50);
 	waitUntilMotorStop(width);
 }
 void setPositionY(int y)
@@ -97,7 +97,7 @@ void setPositionY(int y)
 	int pos;
 	int distances[3] = {548, 327, 0};
 	pos = distances[y];
-	setMotorTarget(height,pos,20);
+	setMotorTarget(height,pos,50);
 	waitUntilMotorStop(height);
 }
 void getC()
@@ -480,45 +480,79 @@ void returnToZero()
 }
 int getColorByRGB(int r, int g, int b, float k)
 {
-if(r >= 180 && g >= 180 && b >= 180 && k >= 0.4)
+	if(r >= 180 && g >= 180 && b >= 180 && k >= 0.4)
+	{
+		return 6;
+	}
+	else if(r >= 180 && g >= 180 && b >= 180 && k <= 0.3)
+	{
+		return 1;
+	}
+	else if(b >= 250 && r >= 123 && g >= 123)
+	{
+		return 4;
+	}
+	else if(b >= 250)
+	{
+		return 2;
+	}
+	else if(r >= 250)
+	{
+		return 5;
+	}
+	else if(g >= 250)
+	{
+		return 3;
+	}
+	return -1;
+}
+
+void filling_color_mas()
 {
-	return 6;
+	for(int i = 0; i < 6; i++)
+	{
+		setPositionX(i);
+		setColor();
+		color[i] = getColorByRGB(r1,g1,b1,k1);
+	  delay(1000);
+	}
 }
-else if(r >= 250 && g >= 250 && b >= 250 && k <= 0.3)
+
+void filling_true_color_mas()
 {
-	return 1;
+	int pos;
+	//float distances[6] = {36.0,-6.0,-48.0,-90.0,-132.0,-174.0};
+	//pos = (int)((distances[x]/3.1)* 22.5 * (5.0 / 3.0));
+	for(int i = 0; i < 6; i++)
+	{
+		int distances[6] = {-327,-555,-750,-1002,-1182,-1392};
+		pos = distances[i];
+		setMotorTarget(width, pos, 50);
+		waitUntilMotorStop(width);
+		true_color[i] = SensorValue(color1);
+		delay(1000);
+	}
+
 }
-else if(b >= 250 && r >= 123 && g >= 123 && k >= 0.3)
-{
-	return 4;
-}
-else if(b >= 250 && k >= 0.35)
-{
-	return 2;
-}
-else if(r >= 250 && k >= 0.35)
-{
-	return 5;
-}
-else if(g >= 250 && k >= 0.3)
-{
-	return 3;
-}
-return -1;
-}
+
 task main()
 {
-		//returnToZero();
+		returnToZero();
     delay(1000);
+    /*filling_color_mas();
+    filling_true_color_mas();
     while(1)
     {
     	colorTr = SensorValue[color1];
+    	do
+    	{
     	setColor();
     	colorR = getColorByRGB(r1,g1,b1,k1);
+			}
+			while(colorR == -1);
+    delay(1000);
+  	}*/
 
-    delay(200);
-  	}
-    /*
     read_color();
     read_true_color();
     true_position();
@@ -578,5 +612,5 @@ task main()
         graphing();
     }
     }
-    */
+
 }

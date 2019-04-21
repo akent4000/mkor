@@ -1,4 +1,4 @@
-#include <stdio.h>
+
 
 int      color[6] = {5, 4, 2, 1, 3, 6};
 int true_color[6] = {2, 6, 5, 3, 4, 1};

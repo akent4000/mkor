@@ -1,6 +1,6 @@
-#pragma config(Sensor, S1,     color1,         sensorI2CCustom)
+#pragma config(Sensor, S1,     color2,         sensorEV3_Color, modeEV3Color_Color)
 #pragma config(Sensor, S3,     widthT,         sensorEV3_Touch)
-#pragma config(Sensor, S4,     color2,         sensorEV3_Color)
+#pragma config(Sensor, S4,     color1,         sensorI2CCustom)
 #pragma config(Motor,  motorA,          colorTrueM,    tmotorEV3_Large, PIDControl, encoder)
 #pragma config(Motor,  motorB,          hand,          tmotorEV3_Medium, PIDControl, encoder)
 #pragma config(Motor,  motorC,          width,         tmotorEV3_Large, PIDControl, encoder)
@@ -9,8 +9,6 @@
 
 #include "include/hitechnic-colour-v2.h"
 tHTCS2 colorSensor;
-int colorR;
-int colorTr;
 
 int      color[6] = {5, 4, 2, 1, 3, 6};
 int true_color[6] = {2, 6, 5, 3, 4, 1};
@@ -55,23 +53,23 @@ int getColor();
 void setPositionX(int x)
 {
 	int pos;
-	int distances[6] = {1512,1212,912,605,305,17};
+	int distances[6] = {1454,1147,851,565,265,-54};
 	pos = distances[x];
-	setMotorTarget(width, pos, 30);
+	setMotorTarget(width, pos, 100);
 	waitUntilMotorStop(width);
 }
 void setPositionY(int y)
 {
 	int pos;
-	int distances[3] = {777,553,0};
+	int distances[3] = {772,548,0};
 	pos = distances[y];
-	setMotorTarget(height, pos, 30);
+	setMotorTarget(height, pos, 100);
 	waitUntilMotorStop(height);
 }
 void getC()
 {
-	motor[hand] = -20;
-	delay(1000);
+	motor[hand] = -75;
+	delay(750);
 }
 void setC()
 {
@@ -445,38 +443,36 @@ void returnToZero()
 	motor[width] = 0;
 	resetMotorEncoder(height);
 	resetMotorEncoder(width);
+	resetMotorEncoder(colorTrueM);
 }
 
 
 void filling_color_mas()
 {
-	for(int i = 0; i < 6; i++)
+	for(int i = 5; i >= 0; i--)
 	{
 		setPositionX(i);
+		sleep(500);
 		color[i] = getColor();
-		delay(1000);
 	}
 }
 
 void filling_true_color_mas()
 {
-	int pos;
-	//float distances[6] = {36.0,-6.0,-48.0,-90.0,-132.0,-174.0};
-	//pos = (int)((distances[x]/3.1)* 22.5 * (5.0 / 3.0));
-	for(int i = 0; i < 6; i++)
+	int distances[6] = {-892,-759,-662,-530,-406,-288};
+	for(int i = 5; i >= 0; i--)
 	{
-		int distances[6] = {-327,-555,-750,-1002,-1182,-1392};
-		pos = distances[i];
-		setMotorTarget(width, pos, 50);
-		waitUntilMotorStop(width);
-		true_color[i] = SensorValue(color1);
-		delay(1000);
+		setMotorTarget(colorTrueM, distances[i], 50);
+		waitUntilMotorStop(colorTrueM);
+		true_color[i] = SensorValue(color2);
+		delay(500);
 	}
+	setMotorTarget(colorTrueM, 0, 50);
 }
 int getColor()
 {
 	readSensor(&colorSensor);
-	if(colorSensor.color == 0)
+	if(colorSensor.color == 0 || colorSensor.color == 17 || colorSensor.color == 12)
 	{
 		return 1;
 	} else if(colorSensor.color == 2)
@@ -485,119 +481,87 @@ int getColor()
 	} else if(colorSensor.color == 4)
 	{
 		return 3;
+
 	} else if(colorSensor.color == 7)
 	{
 		return 4;
-	} else if(colorSensor.color == 8)
+	} else if(colorSensor.color == 8 || colorSensor.color == 9)
 	{
 		return 5;
 	} else if(colorSensor.color == 14)
 	{
 		return 6;
 	}
-		return -1;
+	return -1;
 }
 task main()
 {
-	//initSensor(&colorSensor, S1);
+	initSensor(&colorSensor, color1);
 	returnToZero();
-	//setPositionY(2);
-	//setPositionX(5);
-	//setPositionY(0);
-	//getC();
-	//setPositionY(2);
-	//setPositionX(4);
-	//setPosit 	ionY(0);
-	//setC();
-	//setPositionY(2);
-	//setPositionX(3);
-	//setPositionY(0);
-	//getC();
-	//setPositionY(2);
-	//setPositionX(2);
-	//setPositionY(0);
-	//setC();
-	setPositionY(2);
-	setPositionX(1);
-	setPositionY(0);
-	getC();
-	setPositionY(2);
-	setPositionX(0);
-	setPositionY(0);
-	setC();
-	//delay(1000);
-	///*filling_color_mas();
-	//filling_true_color_mas();
-	//while(1)
-	//{
-	//colorTr = SensorValue[color1];
-	//do
-	//{
-	//setColor();
-	//colorR = getColorByRGB(r1,g1,b1,k1);
-	//}
-	//while(colorR == -1);
-	//delay(1000);
-	//}*/
+	filling_color_mas();
+	filling_true_color_mas();
 
-	//read_color();
-	//read_true_color();
-	//true_position();
-	//graphing();
-	////    write();
-	//while(checkCargo() == 0)
-	//{
-	//	for(int i = 0; i < 3; i++)
-	//	{
-	//		if(graph_amount_cubes[i] == 4)
-	//		{
-	//			int cargoForMove = findCargoByTypeInGraph(1,i, -1, -1);
-	//			int cargoForStay = findCargoByTypeInGraph(1,i, cargo[cargoForMove][2], cargo[cargoForMove][3]);
-	//			int cargoForRemove = find_cargo(cargo[cargoForMove][2],0);
-	//			int oldX = cargo[cargoForMove][3];
-	//			int newX = cargo[cargoForRemove][3];
-	//			int middleX = cargo[cargoForStay][3];
-	//			movement(cargoForMove, middleX);
-	//			//            write();
-	//			movement(cargoForRemove, oldX);
-	//			//            write();
-	//			movement(cargoForMove, newX);
-	//			//            write();
-	//		}
-	//		else if(graph_amount_ball[i] == 2 && graph_size[i] == 2)
-	//		{
-	//			int cargoForMove1 = findCargoByTypeInGraph(2,i,-1,-1);
-	//			int cargoForMove2 = findCargoByTypeInGraph(2,i,cargo[cargoForMove1][3],-1);
-	//			int cargoForStay = findCargoByTypeNotInGraph(1,i);
-	//			int X1 = cargo[cargoForMove1][3];
-	//			int X2 = cargo[cargoForMove2][3];
-	//			int middleX = cargo[cargoForStay][3];
-	//			//            printf("1: %d 2: %d 3: %d",cargoForMove1,cargoForMove2,cargoForStay);
-	//			movement(cargoForMove1, middleX);
-	//			//            write();
-	//			movement(cargoForMove2, X1);
-	//			//            write();
-	//			movement(cargoForMove1, X2);
-	//			//            write();
-	//		}
-	//		else if(graph_size[i] != 0)
-	//		{
-	//			int cargoForStay = findCargoByNotTypeNotInGraph(2,i);
-	//			int cargoForMoveOut = findCargoByNotTypeInGraph(2,i,-1,-1);
-	//			int currentDestinstion = cargo[cargoForMoveOut][3];
-	//			movement(cargoForMoveOut, cargo[cargoForStay][3]);
-	//			while(findCargoByDestination(currentDestinstion) != cargoForMoveOut)
-	//			{
-	//				int cargoForMove = findCargoByDestination(currentDestinstion);
-	//				int temp = cargo[cargoForMove][3];
-	//				movement(cargoForMove, cargo[cargoForMove][2]);
-	//				currentDestinstion = temp;
-	//				//                write();
-	//			}
-	//			movement(cargoForMoveOut, cargo[cargoForMoveOut][2]);
-	//		}
-	//		graphing();
-	//	}
-	//}
 
+	read_color();
+	read_true_color();
+	true_position();
+	graphing();
+	//    write();
+	while(checkCargo() == 0)
+	{
+		for(int i = 0; i < 3; i++)
+		{
+			if(graph_amount_cubes[i] == 4)
+			{
+				int cargoForMove = findCargoByTypeInGraph(1,i, -1, -1);
+				int cargoForStay = findCargoByTypeInGraph(1,i, cargo[cargoForMove][2], cargo[cargoForMove][3]);
+				int cargoForRemove = find_cargo(cargo[cargoForMove][2],0);
+				int oldX = cargo[cargoForMove][3];
+				int newX = cargo[cargoForRemove][3];
+				int middleX = cargo[cargoForStay][3];
+				movement(cargoForMove, middleX);
+				//            write();
+				movement(cargoForRemove, oldX);
+				//            write();
+				movement(cargoForMove, newX);
+				//            write();
+			}
+			else if(graph_amount_ball[i] == 2 && graph_size[i] == 2)
+			{
+				int cargoForMove1 = findCargoByTypeInGraph(2,i,-1,-1);
+				int cargoForMove2 = findCargoByTypeInGraph(2,i,cargo[cargoForMove1][3],-1);
+				int cargoForStay = findCargoByTypeNotInGraph(1,i);
+				int X1 = cargo[cargoForMove1][3];
+				int X2 = cargo[cargoForMove2][3];
+				int middleX = cargo[cargoForStay][3];
+				//            printf("1: %d 2: %d 3: %d",cargoForMove1,cargoForMove2,cargoForStay);
+				movement(cargoForMove1, middleX);
+				//            write();
+				movement(cargoForMove2, X1);
+				//            write();
+				movement(cargoForMove1, X2);
+				//            write();
+			}
+			else if(graph_size[i] != 0)
+			{
+				int cargoForStay = findCargoByNotTypeNotInGraph(2,i);
+				int cargoForMoveOut = findCargoByNotTypeInGraph(2,i,-1,-1);
+				int currentDestinstion = cargo[cargoForMoveOut][3];
+				movement(cargoForMoveOut, cargo[cargoForStay][3]);
+				while(findCargoByDestination(currentDestinstion) != cargoForMoveOut)
+				{
+					int cargoForMove = findCargoByDestination(currentDestinstion);
+					int temp = cargo[cargoForMove][3];
+					movement(cargoForMove, cargo[cargoForMove][2]);
+					currentDestinstion = temp;
+					//                write();
+				}
+				movement(cargoForMoveOut, cargo[cargoForMoveOut][2]);
+			}
+			graphing();
+		}
+	}
+	waitUntilMotorStop(colorTrueM);
+	waitUntilMotorStop(width);
+	waitUntilMotorStop(height);
 }

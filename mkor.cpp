@@ -1,4 +1,5 @@
 #pragma config(Sensor, S1,     color2,         sensorEV3_Color, modeEV3Color_Color)
+#pragma config(Sensor, S2,     zeroPosIndicator, sensorColorNxtRED)
 #pragma config(Sensor, S3,     widthT,         sensorEV3_Touch)
 #pragma config(Sensor, S4,     color1,         sensorI2CCustom)
 #pragma config(Motor,  motorA,          colorTrueM,    tmotorEV3_Large, PIDControl, encoder)
@@ -433,8 +434,8 @@ int checkCargo()
 
 void returnToZero()
 {
-	motor[height] = -20;
-	sleep(3000);
+	motor[height] = -100;
+	sleep(1500);
 	motor[height] = 0;
 	motor[width] = 20;
 	while(SensorValue[widthT] != 0);
@@ -498,10 +499,18 @@ task main()
 {
 	initSensor(&colorSensor, color1);
 	returnToZero();
+	setMotorTarget(width, 167, 100);
+	setMotorTarget(height, 698, 100);
+	waitUntilMotorStop(width);
+	waitUntilMotorStop(height);
+	SensorType[zeroPosIndicator] = sensorColorNxtGREEN;
+	while(getButtonPress(buttonEnter) == 0);
+	SensorType[zeroPosIndicator] = sensorColorNxtRED;
+	setPositionY(2);
 	filling_color_mas();
 	filling_true_color_mas();
-
-
+		displayCenteredTextLine(1, "%d %d %d %d %d %d", color[0], color[1], color[2], color[3], color[4], color[5]);
+		displayCenteredTextLine(2, "%d %d %d %d %d %d", true_color[0], true_color[1], true_color[2], true_color[3], true_color[4], true_color[5]);
 	read_color();
 	read_true_color();
 	true_position();
@@ -561,7 +570,10 @@ task main()
 			graphing();
 		}
 	}
+	setMotorTarget(width, 167, 100);
+	setMotorTarget(height, 698, 100);
 	waitUntilMotorStop(colorTrueM);
 	waitUntilMotorStop(width);
 	waitUntilMotorStop(height);
+	SensorType[zeroPosIndicator] = sensorColorNxtGREEN;
 }

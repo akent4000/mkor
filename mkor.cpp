@@ -1,4 +1,4 @@
-  #pragma config(Sensor, S1,     color2,         sensorEV3_Color, modeEV3Color_Color)
+#pragma config(Sensor, S1,     color2,         sensorEV3_Color, modeEV3Color_Color)
 #pragma config(Sensor, S2,     indicatorOfZeroPos, sensorColorNxtRED)
 #pragma config(Sensor, S3,     widthT,         sensorEV3_Touch)
 #pragma config(Sensor, S4,     color1,         sensorI2CCustom)
@@ -10,7 +10,6 @@
 
 #include "hitechnic-colour-v2.h"
 tHTCS2 colorSensor;
-
 int      color[6] = {5, 4, 2, 1, 3, 6};
 int true_color[6] = {2, 6, 5, 3, 4, 1};
 
@@ -62,7 +61,7 @@ void setPositionX(int x)
 void setPositionY(int y)
 {
 	int pos;
-	int distances[3] = {772,548,0};
+	int distances[3] = {776,535,0};
 	pos = distances[y];
 	setMotorTarget(height, pos, 100);
 	waitUntilMotorStop(height);
@@ -70,11 +69,11 @@ void setPositionY(int y)
 void getC()
 {
 	motor[hand] = -75;
-	delay(750);
+	delay(250);
 }
 void setC()
 {
-	setMotorTarget(hand,0,20);
+	setMotorTarget(hand,0,65);
 	waitUntilMotorStop(hand);
 }
 int check_stay(int first_cargo, int second_cargo)
@@ -165,7 +164,7 @@ void true_position()
 int find_cargo(int destination, int destinationZ)
 {
 	int i = 0;
-	while((cargo[i][3] != destination || cargo[i][4] != destinationZ) && i < 6) i++;
+	while(i < 6 && (cargo[i][3] != destination || cargo[i][4] != destinationZ)) i++;
 	return i < 6 ? i : -1;
 }
 int check_number_of_cargo_on_pos(int destination)
@@ -302,19 +301,21 @@ void movement(int cargo_for_movement, int x)
 	if(cargo[cargo_for_movement][5] == -1 && cargo[cargo_for_movement][3] != x)
 	{
 		int oldX = cargo[cargo_for_movement][3];
-		if(check_number_of_cargo_on_pos(x) == 0)
+		int cargosOnOldX = check_number_of_cargo_on_pos(oldX);
+		int cargosOnX = check_number_of_cargo_on_pos(x);
+		if(cargosOnX == 0)
 		{
 			setPositionX(oldX);
-			if(check_number_of_cargo_on_pos(oldX) == 1)
+			if(cargosOnOldX == 1)
 			{
 				setPositionY(0);
 			}
-			else if(check_number_of_cargo_on_pos(oldX) == 2)
+			else if(cargosOnOldX == 2)
 			{
 				setPositionY(1);
 			}
 			getC();
-			if(abs(cargo[cargo_for_movement][3] - x) != 1)
+			if(abs(cargo[cargo_for_movement][3] - x) != 1 || cargosOnX != 0 || cargosOnOldX != 0)
 			{
 			setPositionY(2);
 			}
@@ -330,28 +331,21 @@ void movement(int cargo_for_movement, int x)
 			cargo[cargo_for_movement][4] = 0;
 
 		}
-		else if(check_number_of_cargo_on_pos(x) == 1)
+		else if(cargosOnOldX == 1)
 		{
 			if(check_stay(cargo_for_movement, find_cargo(x,0)) == 1)
 			{
 				setPositionX(oldX);
-				if(check_number_of_cargo_on_pos(oldX) == 1)
+				if(cargosOnOldX == 1)
 				{
 					setPositionY(0);
 				}
-				else if(check_number_of_cargo_on_pos(oldX) == 2)
+				else if(cargosOnOldX == 2)
 				{
 					setPositionY(1);
 				}
 				getC();
-				if(abs(cargo[cargo_for_movement][3] - x) != 1)
-				{
 				setPositionY(2);
-				}
-				else
-				{
-				setPositionY(1);
-				}
 				setPositionX(x);
 				setPositionY(1);
 				setC();
@@ -497,7 +491,7 @@ int getColor()
 	{
 		return 3;
 
-	} else if(colorSensor.color == 7 || colorSensor.color == 6)
+	} else if(colorSensor.color == 7 || colorSensor.color == 6 || colorSensor.color == 5)
 	{
 		return 4;
 	} else if(colorSensor.color == 8 || colorSensor.color == 9)
@@ -518,9 +512,9 @@ task main()
 	setMotorTarget(height, 654, 80);
 	waitUntilMotorStop(width);
 	waitUntilMotorStop(height);
-	SensorType[indicatorOfZeroPos] = sensorColorNxtGREEN;
-	while(getButtonPress(buttonEnter) == false);
 	SensorType[indicatorOfZeroPos] = sensorColorNxtRED;
+	while(getButtonPress(buttonEnter) == false);
+	SensorType[indicatorOfZeroPos] = sensorColorNxtNONE;
 	setPositionY(2);
 	filling_color_mas();
 	filling_true_color_mas();
@@ -592,5 +586,5 @@ task main()
 	waitUntilMotorStop(colorTrueM);
 	waitUntilMotorStop(width);
 	waitUntilMotorStop(height);
-	SensorType[indicatorOfZeroPos] = sensorColorNxtGREEN;
+	SensorType[indicatorOfZeroPos] = sensorColorNxtRED;
 }

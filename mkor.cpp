@@ -61,7 +61,7 @@ void setPositionX(int x)
 void setPositionY(int y)
 {
 	int pos;
-	int distances[3] = {755,555,0};
+	int distances[3] = {783,591,157};
 	pos = distances[y];
 	setMotorTarget(height, pos, 100);
 	waitUntilMotorStop(height);
@@ -500,7 +500,7 @@ void filling_true_color_mas()
 	int distances[6] = {-857,-747,-636,-512,-399,-284};
 	for(int i = 5; i >= 0; i--)
 	{
-		setMotorTarget(colorTrueM, distances[i], 50);
+		setMotorTarget(colorTrueM, distances[i], 100);
 		waitUntilMotorStop(colorTrueM);
 		true_color[i] = SensorValue(color2);
 		//sleep(500);
@@ -582,13 +582,15 @@ task main()
 	do
 	{
 	filling_color_mas();
+	displayCenteredTextLine(1,"%d %d %d %d %d %d",color[0], color[1], color[2], color[3], color[4], color[5]);
 	}while(checkColorMassiveToCorrect() == false);
 	do
 	{
 	filling_true_color_mas();
-	}while(checkTrueColorMassiveToCorrect() == false);
-	displayCenteredTextLine(1,"%d %d %d %d %d %d",color[0], color[1], color[2], color[3], color[4], color[5]);
 	displayCenteredTextLine(2,"%d %d %d %d %d %d",true_color[0], true_color[1], true_color[2], true_color[3], true_color[4], true_color[5]);
+	}while(checkTrueColorMassiveToCorrect() == false);
+
+
 
 	read_color();
 	read_true_color();
@@ -656,6 +658,4 @@ task main()
 	waitUntilMotorStop(width);
 	waitUntilMotorStop(height);
 	SensorType[indicatorOfZeroPos] = sensorColorNxtRED;
-	displayCenteredTextLine(3, "%d",(nPgmTime/1000));
-	playImmediateTone(500, 100);
 }

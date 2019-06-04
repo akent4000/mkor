@@ -564,6 +564,52 @@ bool checkTrueColorMassiveToCorrect()
 	}
 	return(true);
 }
+void refillIncorrectColors()
+{
+	for(int i = 0; i < 6; i++)
+	{
+		if(color[i] == -1 || color[i] == 7)
+		{
+			setPositionX(i);
+			color[i] = getColor();
+		}
+		for(int k = 0; k < 6; k++)
+		{
+		if(i != k && color[i] == color[k])
+		{
+			setPositionX(i);
+			color[i] = getColor();
+			setPositionX(k);
+			color[k] = getColor();
+		}
+		}
+	}
+}
+void refillIncorrectTrueColors()
+{
+	int distances[6] = {-857,-747,-636,-512,-399,-284};
+	for(int i = 0; i < 6; i++)
+	{
+		if(true_color[i] == 0 || true_color[i] == 7)
+		{
+			setMotorTarget(colorTrueM, distances[i], 100);
+			waitUntilMotorStop(colorTrueM);
+			true_color[i] = SensorValue(color2);
+		}
+		for(int k = 0; k < 6; k++)
+		{
+		if(i != k && true_color[i] == true_color[k])
+		{
+			setMotorTarget(colorTrueM, distances[i], 100);
+			waitUntilMotorStop(colorTrueM);
+			true_color[i] = SensorValue(color2);
+			setMotorTarget(colorTrueM, distances[k], 100);
+			waitUntilMotorStop(colorTrueM);
+			true_color[k] = SensorValue(color2);
+		}
+		}
+	}
+}
 task main()
 {
 	initSensor(&colorSensor, color1);
@@ -579,14 +625,16 @@ task main()
 	//while(getButtonPress(buttonEnter) == false);
 	//SensorType[indicatorOfZeroPos] = sensorColorNxtRED;
 	setPositionY(2);
+	filling_color_mas();
 	do
 	{
-	filling_color_mas();
+	refillIncorrectColors();
 	displayCenteredTextLine(1,"%d %d %d %d %d %d",color[0], color[1], color[2], color[3], color[4], color[5]);
 	}while(checkColorMassiveToCorrect() == false);
+	filling_true_color_mas();
 	do
 	{
-	filling_true_color_mas();
+	refillIncorrectTrueColors();
 	displayCenteredTextLine(2,"%d %d %d %d %d %d",true_color[0], true_color[1], true_color[2], true_color[3], true_color[4], true_color[5]);
 	}while(checkTrueColorMassiveToCorrect() == false);
 

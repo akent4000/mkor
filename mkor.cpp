@@ -360,7 +360,17 @@ void movement(int cargo_for_movement, int x)
 					setPositionY(1);
 				}
 				getC();
-				setPositionY(2);
+				int maxZ = check_number_of_cargo_on_pos(x);
+			for(int i = 0; i < 6; i++)
+			{
+				if(cargo[i][3] >= min(oldX, x) && cargo[i][3] <= max(oldX,x) )
+					maxZ = maxZ > cargo[i][4] + 1 ? maxZ : cargo[i][4] + 1;
+			}
+			setPositionY(maxZ);
+			if(maxZ != 2)
+			{
+				upHand();
+			}
 				setPositionX(x);
 				setPositionY(1);
 				setC();

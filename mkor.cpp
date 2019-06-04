@@ -61,19 +61,21 @@ void setPositionX(int x)
 void setPositionY(int y)
 {
 	int pos;
-	int distances[3] = {776,535,0};
+	int distances[3] = {755,555,0};
 	pos = distances[y];
 	setMotorTarget(height, pos, 100);
 	waitUntilMotorStop(height);
 }
 void upHand()
 {
-moveMotorTarget(height, -30, 100);
+moveMotorTarget(height, 180, -100);
+waitUntilMotorStop(height);
+//writeDebugStreamLine("Im doing it");
 }
 void getC()
 {
 	motor[hand] = -75;
-	delay(250);
+	sleep(250);
 }
 void setC()
 {
@@ -327,13 +329,14 @@ void movement(int cargo_for_movement, int x)
 				setPositionY(1);
 			}
 			getC();
-			int maxZ = check_number_of_cargo_on_pos(x);
+			int maxZ = max(check_number_of_cargo_on_pos(x), cargo[cargo_for_movement][4]);
 			for(int i = 0; i < 6; i++)
 			{
-				if(cargo[i][3] >= min(oldX, x) && cargo[i][3] <= max(oldX,x) )
-					maxZ = maxZ > cargo[i][4] + 1 ? maxZ : cargo[i][4] + 1;
+				if(cargo[i][3] > min(oldX, x) && cargo[i][3] < max(oldX,x))
+					maxZ = max(maxZ, cargo[i][4] + 1);
 			}
 			setPositionY(maxZ);
+			//writeDebugStreamLine("%d", maxZ);
 			if(maxZ != 2)
 			{
 				upHand();
@@ -360,13 +363,14 @@ void movement(int cargo_for_movement, int x)
 					setPositionY(1);
 				}
 				getC();
-				int maxZ = check_number_of_cargo_on_pos(x);
+				int maxZ = max(check_number_of_cargo_on_pos(x), cargo[cargo_for_movement][4]);
 			for(int i = 0; i < 6; i++)
 			{
-				if(cargo[i][3] >= min(oldX, x) && cargo[i][3] <= max(oldX,x) )
-					maxZ = maxZ > cargo[i][4] + 1 ? maxZ : cargo[i][4] + 1;
+				if(cargo[i][3] > min(oldX, x) && cargo[i][3] < max(oldX,x) )
+					maxZ = max(maxZ, cargo[i][4] + 1);
 			}
 			setPositionY(maxZ);
+			//writeDebugStreamLine("%d", maxZ);
 			if(maxZ != 2)
 			{
 				upHand();
@@ -486,7 +490,7 @@ void filling_color_mas()
 	for(int i = 5; i >= 0; i--)
 	{
 		setPositionX(i);
-		sleep(500);
+		//sleep(500);
 		color[i] = getColor();
 	}
 }
@@ -499,7 +503,7 @@ void filling_true_color_mas()
 		setMotorTarget(colorTrueM, distances[i], 50);
 		waitUntilMotorStop(colorTrueM);
 		true_color[i] = SensorValue(color2);
-		delay(500);
+		//sleep(500);
 	}
 	setMotorTarget(colorTrueM, 0, 50);
 }
@@ -532,14 +536,17 @@ int getColor()
 task main()
 {
 	initSensor(&colorSensor, color1);
-	returnToZero();
-	setMotorTarget(width, 121, 80);
-	setMotorTarget(height, 654, 80);
+	SensorType[indicatorOfZeroPos] = sensorColorNxtBLUE;
+	moveMotorTarget(width, 80, -100);
 	waitUntilMotorStop(width);
-	waitUntilMotorStop(height);
-	SensorType[indicatorOfZeroPos] = sensorColorNxtRED;
-	while(getButtonPress(buttonEnter) == false);
-	SensorType[indicatorOfZeroPos] = sensorColorNxtNONE;
+	returnToZero();
+	//setMotorTarget(width, 121, 80);
+	//setMotorTarget(height, 654, 80);
+	//waitUntilMotorStop(width);
+	//waitUntilMotorStop(height);
+	//SensorType[indicatorOfZeroPos] = sensorColorNxtBLUE;
+	//while(getButtonPress(buttonEnter) == false);
+	//SensorType[indicatorOfZeroPos] = sensorColorNxtRED;
 	setPositionY(2);
 	filling_color_mas();
 	filling_true_color_mas();
@@ -612,4 +619,6 @@ task main()
 	waitUntilMotorStop(width);
 	waitUntilMotorStop(height);
 	SensorType[indicatorOfZeroPos] = sensorColorNxtRED;
+	displayCenteredTextLine(3, "%d",(nPgmTime/1000));
+	playImmediateTone(500, 100);
 }

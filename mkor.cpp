@@ -532,7 +532,38 @@ int getColor()
 	}
 	return -1;
 }
-
+bool checkColorMassiveToCorrect()
+{
+	for(int i = 1; i <= 6; i++)
+	{
+		int number = 0;
+		for(int k = 0; k < 6; k++)
+		{
+			if(i == color[k])
+			{
+			number++;
+			}
+		}
+		if(number != 1) return(false);
+	}
+	return(true);
+}
+bool checkTrueColorMassiveToCorrect()
+{
+	for(int i = 1; i <= 6; i++)
+	{
+		int number = 0;
+		for(int k = 0; k < 6; k++)
+		{
+			if(i == true_color[k])
+			{
+			number++;
+			}
+		}
+		if(number != 1) return(false);
+	}
+	return(true);
+}
 task main()
 {
 	initSensor(&colorSensor, color1);
@@ -548,8 +579,14 @@ task main()
 	//while(getButtonPress(buttonEnter) == false);
 	//SensorType[indicatorOfZeroPos] = sensorColorNxtRED;
 	setPositionY(2);
+	do
+	{
 	filling_color_mas();
+	}while(checkColorMassiveToCorrect() == false);
+	do
+	{
 	filling_true_color_mas();
+	}while(checkTrueColorMassiveToCorrect() == false);
 	displayCenteredTextLine(1,"%d %d %d %d %d %d",color[0], color[1], color[2], color[3], color[4], color[5]);
 	displayCenteredTextLine(2,"%d %d %d %d %d %d",true_color[0], true_color[1], true_color[2], true_color[3], true_color[4], true_color[5]);
 

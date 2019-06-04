@@ -66,6 +66,10 @@ void setPositionY(int y)
 	setMotorTarget(height, pos, 100);
 	waitUntilMotorStop(height);
 }
+void upHand()
+{
+moveMotorTarget(height, -30, 100);
+}
 void getC()
 {
 	motor[hand] = -75;
@@ -296,6 +300,14 @@ return ret;
 return ret;
 }
 */
+int min(int n1, int n2)
+{
+	return n1 < n2 ? n1 :	n2;
+}
+int max(int n1, int n2)
+{
+	return n1 > n2 ? n1 :	n2;
+}
 void movement(int cargo_for_movement, int x)
 {
 	if(cargo[cargo_for_movement][5] == -1 && cargo[cargo_for_movement][3] != x)
@@ -315,13 +327,16 @@ void movement(int cargo_for_movement, int x)
 				setPositionY(1);
 			}
 			getC();
-			if(abs(cargo[cargo_for_movement][3] - x) != 1 || cargosOnX != 0 || cargosOnOldX != 0)
+			int maxZ = check_number_of_cargo_on_pos(x);
+			for(int i = 0; i < 6; i++)
 			{
-			setPositionY(2);
+				if(cargo[i][3] >= min(oldX, x) && cargo[i][3] <= max(oldX,x) )
+					maxZ = maxZ > cargo[i][4] + 1 ? maxZ : cargo[i][4] + 1;
 			}
-			else
+			setPositionY(maxZ);
+			if(maxZ != 2)
 			{
-			setPositionY(1);
+				upHand();
 			}
 			setPositionX(x);
 			setPositionY(0);

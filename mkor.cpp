@@ -12,7 +12,7 @@
 tHTCS2 colorSensor;
 int      color[6] = {5, 4, 2, 1, 3, 6};
 int true_color[6] = {2, 6, 5, 3, 4, 1};
-
+int types[6] = {1, 0, 1, 2, 0, 2};
 int graphs[3][6];
 int graph_size[3];
 int graph_amount_ball[3];
@@ -49,7 +49,23 @@ int getColor();
 6 - true position
 */
 
-
+void fillTypes() //Advanced1
+{
+	for(int i = 0; i < 6; i++)
+	{
+		if(color[i] == 4 || color[i] == 6)
+	{
+		types[true_color[i] - 1] = 0;
+	}
+	else
+	{
+		if(true_color[i] != 6 && true_color[i] != 4)
+		{
+			types[true_color[i] - 1] = 1;
+		}
+	}
+	}
+}
 void setPositionX(int x)
 {
 	int pos;
@@ -61,7 +77,7 @@ void setPositionX(int x)
 void setPositionY(int y)
 {
 	int pos;
-	int distances[3] = {783,591,157};
+	int distances[3] = {783,591,245};
 	pos = distances[y];
 	setMotorTarget(height, pos, 100);
 	waitUntilMotorStop(height);
@@ -105,22 +121,22 @@ void read_color()
 		switch(cargo[i][0])
 		{
 		case 1:
-			cargo[i][1] = 1;
+			cargo[i][1] = types[0];
 			break;
 		case 2:
-			cargo[i][1] = 0;
+			cargo[i][1] = types[1];
 			break;
 		case 3:
-			cargo[i][1] = 1;
+			cargo[i][1] = types[2];
 			break;
 		case 4:
-			cargo[i][1] = 2;
+			cargo[i][1] = types[3];
 			break;
 		case 5:
-			cargo[i][1] = 0;
+			cargo[i][1] = types[4];
 			break;
 		case 6:
-			cargo[i][1] = 2;
+			cargo[i][1] = types[5];
 			break;
 		}
 
@@ -612,6 +628,7 @@ void refillIncorrectTrueColors()
 }
 task main()
 {
+	clearTimer(T1);
 	initSensor(&colorSensor, color1);
 	SensorType[indicatorOfZeroPos] = sensorColorNxtBLUE;
 	moveMotorTarget(width, 80, -100);
@@ -639,7 +656,8 @@ task main()
 	}while(checkTrueColorMassiveToCorrect() == false);
 
 
-
+	fillTypes(); //turn off this string if you want to start main task
+	displayCenteredTextLine(4,"%d %d %d %d %d %d", types[0], types[1], types[2], types[3], types[4], types[5]);
 	read_color();
 	read_true_color();
 	true_position();
@@ -706,4 +724,6 @@ task main()
 	waitUntilMotorStop(width);
 	waitUntilMotorStop(height);
 	SensorType[indicatorOfZeroPos] = sensorColorNxtRED;
+	displayCenteredTextLine(3,"%d", time1[T1]/1000);
+	sleep(2000);
 }

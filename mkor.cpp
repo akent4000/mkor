@@ -77,7 +77,7 @@ void setPositionX(int x)
 void setPositionY(int y)
 {
 	int pos;
-	int distances[3] = {783,591,245};
+	int distances[3] = {783,545,245};
 	pos = distances[y];
 	setMotorTarget(height, pos, 100);
 	waitUntilMotorStop(height);
@@ -654,9 +654,9 @@ task main()
 	refillIncorrectTrueColors();
 	displayCenteredTextLine(2,"%d %d %d %d %d %d",true_color[0], true_color[1], true_color[2], true_color[3], true_color[4], true_color[5]);
 	}while(checkTrueColorMassiveToCorrect() == false);
+	setMotorTarget(colorTrueM, 0 ,100);
 
-
-	fillTypes(); //turn off this string if you want to start main task
+	//fillTypes(); //turn off this string if you want to start main task
 	displayCenteredTextLine(4,"%d %d %d %d %d %d", types[0], types[1], types[2], types[3], types[4], types[5]);
 	read_color();
 	read_true_color();

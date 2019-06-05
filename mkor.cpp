@@ -521,7 +521,7 @@ void filling_true_color_mas()
 		true_color[i] = SensorValue(color2);
 		//sleep(500);
 	}
-	setMotorTarget(colorTrueM, 0, 50);
+	setMotorTarget(colorTrueM, 0, 100);
 }
 int getColor()
 {
@@ -718,8 +718,8 @@ task main()
 			graphing();
 		}
 	}
-	setMotorTarget(width, 121, 80);
-	setMotorTarget(height, 654, 80);
+	setMotorTarget(width, 121, 100);
+	setMotorTarget(height, 654, 100);
 	waitUntilMotorStop(colorTrueM);
 	waitUntilMotorStop(width);
 	waitUntilMotorStop(height);

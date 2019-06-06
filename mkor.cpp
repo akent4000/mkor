@@ -12,6 +12,7 @@
 tHTCS2 colorSensor;
 int      color[6] = {5, 4, 2, 1, 3, 6};
 int true_color[6] = {2, 6, 5, 3, 4, 1};
+int true_color_adv[6];
 int types[6] = {1, 0, 1, 2, 0, 2};
 int graphs[3][6];
 int graph_size[3];
@@ -48,7 +49,24 @@ int getColor();
 -1 - null
 6 - true position
 */
-
+int findPlaceByColor(int col)//Advanced2
+{
+	for(int i = 0; i < 6; i++)
+	{
+		if(col == true_color[i])
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+void fillTrueColorAdvanced() //Advanced2
+{
+	for(int i = 0; i < 6; i++)
+	{
+		true_color_adv[i] = color[findPlaceByColor(color[i])];
+	}
+}
 void fillTypes() //Advanced1
 {
 	for(int i = 0; i < 6; i++)
@@ -90,12 +108,13 @@ waitUntilMotorStop(height);
 }
 void getC()
 {
-	motor[hand] = -75;
-	sleep(250);
+	motor[hand] = -100;
+	sleep(75);
+	motor[hand] = -20;
 }
 void setC()
 {
-	setMotorTarget(hand,0,65);
+	setMotorTarget(hand,0,60);
 	waitUntilMotorStop(hand);
 }
 int check_stay(int first_cargo, int second_cargo)
@@ -658,6 +677,10 @@ task main()
 
 	//fillTypes(); //turn off this string if you want to start main task
 	displayCenteredTextLine(4,"%d %d %d %d %d %d", types[0], types[1], types[2], types[3], types[4], types[5]);
+	fillTrueColorAdvanced();
+	for(int i = 0; i < 6; i++)
+		true_color[i] = true_color_adv[i];
+	displayCenteredTextLine(6,"%d %d %d %d %d %d",true_color[0], true_color[1], true_color[2], true_color[3], true_color[4], true_color[5]);
 	read_color();
 	read_true_color();
 	true_position();

@@ -13,7 +13,7 @@ tHTCS2 colorSensor;
 int currentX;
 int      color[6] = {5, 4, 2, 1, 3, 6};
 int true_color[6] = {2, 6, 5, 3, 4, 1};
-int true_color_adv[6];
+int true_color_adv[6] = {0, 0, 0, 0, 0, 0};
 int types[6] = {1, 0, 1, 2, 0, 2};
 int graphs[3][6];
 int graph_size[3];
@@ -110,7 +110,7 @@ void upHand()
 }
 void getC()
 {
-	motor[hand] = -40;
+	motor[hand] = -75;
 	sleep(75);
 	motor[hand] = -20;
 }

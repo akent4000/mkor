@@ -456,9 +456,9 @@ int findCargoByTypeInGraph(int type, int graph, int excludeDes, int excludeX)
 	{
 		if(checkedVars[i] == -1)
 			break;
-		if(abs(currentX - cargo[i][3]) < minAbs)
+		if(abs(currentX - cargo[checkedVars[i]][3]) < minAbs)
 		{
-			minAbs = abs(currentX - cargo[i][3]);
+			minAbs = abs(currentX - cargo[checkedVars[i]][3]);
 			needVar = i;
 		}
 	}
@@ -482,9 +482,9 @@ int findCargoByNotTypeInGraph(int type, int graph, int excludeDes, int excludeX)
 	{
 		if(checkedVars[i] == -1)
 			break;
-		if(abs(currentX - cargo[i][3]) < minAbs)
+		if(abs(currentX - cargo[checkedVars[i]][3]) < minAbs)
 		{
-			minAbs = abs(currentX - cargo[i][3]);
+			minAbs = abs(currentX - cargo[checkedVars[i]][3]);
 			needVar = i;
 		}
 	}
@@ -507,9 +507,9 @@ int findCargoByTypeNotInGraph(int type, int graph)
 	}
 	for(int i = 0; i < 6; i++)
 	{
-		if(checkedVars[i] == -1)
+		if(checkedVars[checkedVars[i]] == -1)
 			break;
-		if(abs(currentX - cargo[i][3]) < minAbs)
+		if(abs(currentX - cargo[checkedVars[i]][3]) < minAbs)
 		{
 			minAbs = abs(currentX - cargo[i][3]);
 			needVar = i;
@@ -534,9 +534,9 @@ int findCargoByNotTypeNotInGraph(int type, int graph)
 	{
 		if(checkedVars[i] == -1)
 			break;
-		if(abs(currentX - cargo[i][3]) < minAbs)
+		if(abs(currentX - cargo[checkedVars[i]][3]) < minAbs)
 		{
-			minAbs = abs(currentX - cargo[i][3]);
+			minAbs = abs(currentX - cargo[checkedVars[i]][3]);
 			needVar = i;
 		}
 	}

@@ -110,13 +110,13 @@ void upHand()
 }
 void getC()
 {
-	motor[hand] = -100;
+	motor[hand] = -40;
 	sleep(75);
 	motor[hand] = -20;
 }
 void setC()
 {
-	setMotorTarget(hand,0,60);
+	setMotorTarget(hand,0,55);
 	waitUntilMotorStop(hand);
 }
 int check_stay(int first_cargo, int second_cargo)
@@ -459,7 +459,7 @@ int findCargoByTypeInGraph(int type, int graph, int excludeDes, int excludeX)
 		if(abs(currentX - cargo[checkedVars[i]][3]) < minAbs)
 		{
 			minAbs = abs(currentX - cargo[checkedVars[i]][3]);
-			needVar = i;
+			needVar = checkedVars[i];
 		}
 	}
 	return needVar;
@@ -485,7 +485,7 @@ int findCargoByNotTypeInGraph(int type, int graph, int excludeDes, int excludeX)
 		if(abs(currentX - cargo[checkedVars[i]][3]) < minAbs)
 		{
 			minAbs = abs(currentX - cargo[checkedVars[i]][3]);
-			needVar = i;
+			needVar = checkedVars[i];
 		}
 	}
 	return needVar;
@@ -511,8 +511,8 @@ int findCargoByTypeNotInGraph(int type, int graph)
 			break;
 		if(abs(currentX - cargo[checkedVars[i]][3]) < minAbs)
 		{
-			minAbs = abs(currentX - cargo[i][3]);
-			needVar = i;
+			minAbs = abs(currentX - cargo[checkedVars[i]][3]);
+			needVar = checkedVars[i];
 		}
 	}
 	return needVar;
@@ -537,7 +537,7 @@ int findCargoByNotTypeNotInGraph(int type, int graph)
 		if(abs(currentX - cargo[checkedVars[i]][3]) < minAbs)
 		{
 			minAbs = abs(currentX - cargo[checkedVars[i]][3]);
-			needVar = i;
+			needVar = checkedVars[i];
 		}
 	}
 	return needVar;
@@ -752,7 +752,7 @@ task main()
 			if(graph_amount_cubes[i] == 4)
 			{
 
-				int cargoForMove = findCargoByTypeInGraph(1,i, -1, -1);
+				int cargoForMove = findCargoByNotTypeInGraph(2,i, -1, -1);
 				int cargoForStay = findCargoByNotTypeInGraph(2,i, cargo[cargoForMove][2], cargo[cargoForMove][3]);
 				int cargoForRemove = find_cargo(cargo[cargoForMove][2],0);
 				int oldX = cargo[cargoForMove][3];

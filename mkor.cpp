@@ -10,6 +10,7 @@
 
 #include "hitechnic-colour-v2.h"
 tHTCS2 colorSensor;
+int currentX;
 int      color[6] = {5, 4, 2, 1, 3, 6};
 int true_color[6] = {2, 6, 5, 3, 4, 1};
 int true_color_adv[6];
@@ -72,16 +73,16 @@ void fillTypes() //Advanced1
 	for(int i = 0; i < 6; i++)
 	{
 		if(color[i] == 4 || color[i] == 6)
-	{
-		types[true_color[i] - 1] = 0;
-	}
-	else
-	{
-		if(true_color[i] != 6 && true_color[i] != 4)
 		{
-			types[true_color[i] - 1] = 1;
+			types[true_color[i] - 1] = 0;
 		}
-	}
+		else
+		{
+			if(true_color[i] != 6 && true_color[i] != 4)
+			{
+				types[true_color[i] - 1] = 1;
+			}
+		}
 	}
 }
 void setPositionX(int x)
@@ -91,6 +92,7 @@ void setPositionX(int x)
 	pos = distances[x];
 	setMotorTarget(width, pos, 100);
 	waitUntilMotorStop(width);
+	currentX = x;
 }
 void setPositionY(int y)
 {
@@ -102,9 +104,9 @@ void setPositionY(int y)
 }
 void upHand()
 {
-moveMotorTarget(height, 180, -100);
-waitUntilMotorStop(height);
-//writeDebugStreamLine("Im doing it");
+	moveMotorTarget(height, 180, -100);
+	waitUntilMotorStop(height);
+	//writeDebugStreamLine("Im doing it");
 }
 void getC()
 {
@@ -399,17 +401,17 @@ void movement(int cargo_for_movement, int x)
 				}
 				getC();
 				int maxZ = max(check_number_of_cargo_on_pos(x), cargo[cargo_for_movement][4]);
-			for(int i = 0; i < 6; i++)
-			{
-				if(cargo[i][3] > min(oldX, x) && cargo[i][3] < max(oldX,x) )
-					maxZ = max(maxZ, cargo[i][4] + 1);
-			}
-			setPositionY(maxZ);
-			//writeDebugStreamLine("%d", maxZ);
-			if(maxZ != 2)
-			{
-				upHand();
-			}
+				for(int i = 0; i < 6; i++)
+				{
+					if(cargo[i][3] > min(oldX, x) && cargo[i][3] < max(oldX,x) )
+						maxZ = max(maxZ, cargo[i][4] + 1);
+				}
+				setPositionY(maxZ);
+				//writeDebugStreamLine("%d", maxZ);
+				if(maxZ != 2)
+				{
+					upHand();
+				}
 				setPositionX(x);
 				setPositionY(1);
 				setC();
@@ -439,49 +441,106 @@ int findGraphByCargo(int cargoForSearch)
 }
 int findCargoByTypeInGraph(int type, int graph, int excludeDes, int excludeX)
 {
+	int checkedVars[6] = {-1,-1,-1,-1,-1,-1};
+	int c = 0;
+	int needVar = -1;
+	int minAbs = 100;
 	for(int i = 0; i<6;i++)
 	{
 		if(cargo[i][1] == type && findGraphByCargo(i) == graph && cargo[i][3] != excludeDes && cargo[i][3] != excludeX)
 		{
-			return i;
+			checkedVars[c++] = i;
 		}
 	}
-	return -1;
+	for(int i = 0; i < 6; i++)
+	{
+		if(checkedVars[i] == -1)
+			break;
+		if(abs(currentX - cargo[i][3]) < minAbs)
+		{
+			minAbs = abs(currentX - cargo[i][3]);
+			needVar = i;
+		}
+	}
+	return needVar;
 }
 
 int findCargoByNotTypeInGraph(int type, int graph, int excludeDes, int excludeX)
 {
+	int checkedVars[6] = {-1,-1,-1,-1,-1,-1};
+	int c = 0;
+	int needVar = -1;
+	int minAbs = 100;
 	for(int i = 0; i < 6;i++)
 	{
 		if(cargo[i][1] != type && findGraphByCargo(i) == graph && cargo[i][3] != excludeDes && cargo[i][3] != excludeX)
 		{
-			return i;
+			checkedVars[c++] = i;
 		}
 	}
-	return -1;
+	for(int i = 0; i < 6; i++)
+	{
+		if(checkedVars[i] == -1)
+			break;
+		if(abs(currentX - cargo[i][3]) < minAbs)
+		{
+			minAbs = abs(currentX - cargo[i][3]);
+			needVar = i;
+		}
+	}
+	return needVar;
+
 }
 
 int findCargoByTypeNotInGraph(int type, int graph)
 {
+	int checkedVars[6] = {-1,-1,-1,-1,-1,-1};
+	int c = 0;
+	int needVar = -1;
+	int minAbs = 100;
 	for(int i = 0; i<6;i++)
 	{
 		if(cargo[i][1] == type && findGraphByCargo(i) != graph)
 		{
-			return i;
+			checkedVars[c++] = i;
 		}
 	}
-	return -1;
+	for(int i = 0; i < 6; i++)
+	{
+		if(checkedVars[i] == -1)
+			break;
+		if(abs(currentX - cargo[i][3]) < minAbs)
+		{
+			minAbs = abs(currentX - cargo[i][3]);
+			needVar = i;
+		}
+	}
+	return needVar;
 }
 int findCargoByNotTypeNotInGraph(int type, int graph)
 {
+	int checkedVars[6] = {-1,-1,-1,-1,-1,-1};
+	int c = 0;
+	int needVar = -1;
+	int minAbs = 100;
 	for(int i = 0; i<6;i++)
 	{
 		if(cargo[i][1] != type && findGraphByCargo(i) != graph)
 		{
-			return i;
+			checkedVars[c++] = i;
 		}
 	}
-	return -1;
+	for(int i = 0; i < 6; i++)
+	{
+		if(checkedVars[i] == -1)
+			break;
+		if(abs(currentX - cargo[i][3]) < minAbs)
+		{
+			minAbs = abs(currentX - cargo[i][3]);
+			needVar = i;
+		}
+	}
+	return needVar;
 }
 int findCargoByDestination(int destination)
 {
@@ -576,7 +635,7 @@ bool checkColorMassiveToCorrect()
 		{
 			if(i == color[k])
 			{
-			number++;
+				number++;
 			}
 		}
 		if(number != 1) return(false);
@@ -592,7 +651,7 @@ bool checkTrueColorMassiveToCorrect()
 		{
 			if(i == true_color[k])
 			{
-			number++;
+				number++;
 			}
 		}
 		if(number != 1) return(false);
@@ -610,13 +669,13 @@ void refillIncorrectColors()
 		}
 		for(int k = 0; k < 6; k++)
 		{
-		if(i != k && color[i] == color[k])
-		{
-			setPositionX(i);
-			color[i] = getColor();
-			setPositionX(k);
-			color[k] = getColor();
-		}
+			if(i != k && color[i] == color[k])
+			{
+				setPositionX(i);
+				color[i] = getColor();
+				setPositionX(k);
+				color[k] = getColor();
+			}
 		}
 	}
 }
@@ -633,15 +692,15 @@ void refillIncorrectTrueColors()
 		}
 		for(int k = 0; k < 6; k++)
 		{
-		if(i != k && true_color[i] == true_color[k])
-		{
-			setMotorTarget(colorTrueM, distances[i], 100);
-			waitUntilMotorStop(colorTrueM);
-			true_color[i] = SensorValue(color2);
-			setMotorTarget(colorTrueM, distances[k], 100);
-			waitUntilMotorStop(colorTrueM);
-			true_color[k] = SensorValue(color2);
-		}
+			if(i != k && true_color[i] == true_color[k])
+			{
+				setMotorTarget(colorTrueM, distances[i], 100);
+				waitUntilMotorStop(colorTrueM);
+				true_color[i] = SensorValue(color2);
+				setMotorTarget(colorTrueM, distances[k], 100);
+				waitUntilMotorStop(colorTrueM);
+				true_color[k] = SensorValue(color2);
+			}
 		}
 	}
 }
@@ -664,14 +723,14 @@ task main()
 	filling_color_mas();
 	do
 	{
-	refillIncorrectColors();
-	displayCenteredTextLine(1,"%d %d %d %d %d %d",color[0], color[1], color[2], color[3], color[4], color[5]);
+		refillIncorrectColors();
+		displayCenteredTextLine(1,"%d %d %d %d %d %d",color[0], color[1], color[2], color[3], color[4], color[5]);
 	}while(checkColorMassiveToCorrect() == false);
 	filling_true_color_mas();
 	do
 	{
-	refillIncorrectTrueColors();
-	displayCenteredTextLine(2,"%d %d %d %d %d %d",true_color[0], true_color[1], true_color[2], true_color[3], true_color[4], true_color[5]);
+		refillIncorrectTrueColors();
+		displayCenteredTextLine(2,"%d %d %d %d %d %d",true_color[0], true_color[1], true_color[2], true_color[3], true_color[4], true_color[5]);
 	}while(checkTrueColorMassiveToCorrect() == false);
 	setMotorTarget(colorTrueM, 0 ,100);
 

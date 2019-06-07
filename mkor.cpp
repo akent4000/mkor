@@ -10,6 +10,9 @@
 
 #include "hitechnic-colour-v2.h"
 tHTCS2 colorSensor;
+void setWheels();
+void findWheels();
+int wheels[2][2] = {{-1, 1},{-1, 1}};
 int currentX;
 int      color[6] = {5, 4, 2, 1, 3, 6};
 int true_color[6] = {2, 6, 5, 3, 4, 1};
@@ -50,6 +53,20 @@ int getColor();
 -1 - null
 6 - true position
 */
+
+void inverseTrueColors()
+{
+
+}
+void findWheels()
+{
+	int c = 0;
+	for(int i = 0; i < 6; i++)
+	{
+		if(cargo[i][1] == 0)
+			wheels[c++][0] = cargo[i][3];
+	}
+}
 int findPlaceByColor(int col)//Advanced2
 {
 	for(int i = 0; i < 6; i++)
@@ -97,7 +114,7 @@ void setPositionX(int x)
 void setPositionY(int y)
 {
 	int pos;
-	int distances[3] = {783,545,245};
+	int distances[5] = {783,545,0,654, 433};
 	pos = distances[y];
 	setMotorTarget(height, pos, 100);
 	waitUntilMotorStop(height);
@@ -359,27 +376,36 @@ void movement(int cargo_for_movement, int x)
 			setPositionX(oldX);
 			if(cargosOnOldX == 1)
 			{
+				if(!(wheels[0][0] == oldX || wheels[1][0] == oldX))//(!((wheels[0][0] == oldX && wheels[0][1] == 0) || (wheels[1][0] == oldX && wheels[1][1] == 0)))
 				setPositionY(0);
+			else
+				setPositionY(3);
 			}
 			else if(cargosOnOldX == 2)
 			{
+				if(!(wheels[0][0] == oldX || wheels[1][0] == oldX)//(!((wheels[0][0] == oldX && wheels[0][1] == 0) || (wheels[1][0] == oldX && wheels[1][1] == 0)))
 				setPositionY(1);
+			else
+				setPositionY(4);
 			}
 			getC();
-			int maxZ = max(check_number_of_cargo_on_pos(x), cargo[cargo_for_movement][4]);
-			for(int i = 0; i < 6; i++)
-			{
-				if(cargo[i][3] > min(oldX, x) && cargo[i][3] < max(oldX,x))
-					maxZ = max(maxZ, cargo[i][4] + 1);
-			}
+			int maxZ = 2;//max(check_number_of_cargo_on_pos(x), cargo[cargo_for_movement][4]);
+			//for(int i = 0; i < 6; i++)
+			//{
+			//	if(cargo[i][3] > min(oldX, x) && cargo[i][3] < max(oldX,x))
+			//		maxZ = max(maxZ, cargo[i][4] + 1);
+			//}
 			setPositionY(maxZ);
 			//writeDebugStreamLine("%d", maxZ);
-			if(maxZ != 2)
-			{
-				upHand();
-			}
+			//if(maxZ != 2)
+			//{
+			//	upHand();
+			//}
 			setPositionX(x);
-			setPositionY(0);
+			if(!(wheels[0][0] == x || wheels[1][0] == x)//(!((wheels[0][0] == x && wheels[0][1] == 0) || (wheels[1][0] == x && wheels[1][1] == 0)))
+				setPositionY(0);
+			else
+				setPositionY(3);
 			setC();
 			setPositionY(2);
 			cargo[cargo_for_movement][3] = x;
@@ -393,27 +419,36 @@ void movement(int cargo_for_movement, int x)
 				setPositionX(oldX);
 				if(cargosOnOldX == 1)
 				{
-					setPositionY(0);
+					if(!(wheels[0][0] == oldX || wheels[1][0] == oldX)//(!((wheels[0][0] == oldX && wheels[0][1] == 0) || (wheels[1][0] == oldX && wheels[1][1] == 0)))
+				setPositionY(0);
+			else
+				setPositionY(3);
 				}
 				else if(cargosOnOldX == 2)
 				{
-					setPositionY(1);
+					if(!(wheels[0][0] == oldX || wheels[1][0] == oldX)//(!((wheels[0][0] == oldX && wheels[0][1] == 0) || (wheels[1][0] == oldX && wheels[1][1] == 0)))
+				setPositionY(1);
+					else
+				setPositionY(4);
 				}
 				getC();
-				int maxZ = max(check_number_of_cargo_on_pos(x), cargo[cargo_for_movement][4]);
-				for(int i = 0; i < 6; i++)
-				{
-					if(cargo[i][3] > min(oldX, x) && cargo[i][3] < max(oldX,x) )
-						maxZ = max(maxZ, cargo[i][4] + 1);
-				}
+				int maxZ = 2;//max(check_number_of_cargo_on_pos(x), cargo[cargo_for_movement][4]);
+				//for(int i = 0; i < 6; i++)
+				//{
+				//	if(cargo[i][3] > min(oldX, x) && cargo[i][3] < max(oldX,x) )
+				//		maxZ = max(maxZ, cargo[i][4] + 1);
+				//}
 				setPositionY(maxZ);
 				//writeDebugStreamLine("%d", maxZ);
-				if(maxZ != 2)
-				{
-					upHand();
-				}
+				//if(maxZ != 2)
+				//{
+				//	upHand();
+				//}
 				setPositionX(x);
+				if(!(wheels[0][0] == x || wheels[1][0] == x)//(!((wheels[0][0] == x && wheels[0][1] == 0) || (wheels[1][0] == x && wheels[1][1] == 0)))
 				setPositionY(1);
+			else
+				setPositionY(4);
 				setC();
 				setPositionY(2);
 				cargo[find_cargo(x,0)][5] = cargo_for_movement;
@@ -507,7 +542,7 @@ int findCargoByTypeNotInGraph(int type, int graph)
 	}
 	for(int i = 0; i < 6; i++)
 	{
-		if(checkedVars[checkedVars[i]] == -1)
+		if(checkedVars[i] == -1)
 			break;
 		if(abs(currentX - cargo[checkedVars[i]][3]) < minAbs)
 		{
@@ -553,6 +588,56 @@ int findCargoByDestination(int destination)
 	}
 	return -1;
 }
+int findCargoByNotTypeEx(int type, int excludeX, int excludeDes, int excludeX1)
+{
+	int checkedVars[6] = {-1,-1,-1,-1,-1,-1};
+	int c = 0;
+	int needVar = -1;
+	int minAbs = 100;
+	for(int i = 0; i<6;i++)
+	{
+		if(cargo[i][1] != type && cargo[i][3] != excludeDes && cargo[i][3] != excludeX && cargo[i][3] != excludeX1)
+		{
+			checkedVars[c++] = i;
+		}
+	}
+	for(int i = 0; i < 6; i++)
+	{
+		if(checkedVars[i] == -1)
+			break;
+		if(abs(currentX - cargo[checkedVars[i]][3]) < minAbs)
+		{
+			minAbs = abs(currentX - cargo[checkedVars[i]][3]);
+			needVar = checkedVars[i];
+		}
+	}
+	return needVar;
+}
+int findCargoByTypeEx(int type, int excludeX, int excludeDes, int excludeX1)
+{
+	int checkedVars[6] = {-1,-1,-1,-1,-1,-1};
+	int c = 0;
+	int needVar = -1;
+	int minAbs = 100;
+	for(int i = 0; i<6;i++)
+	{
+		if(cargo[i][1] == type && cargo[i][3] != excludeDes && cargo[i][3] != excludeX && cargo[i][3] != excludeX1)
+		{
+			checkedVars[c++] = i;
+		}
+	}
+	for(int i = 0; i < 6; i++)
+	{
+		if(checkedVars[i] == -1)
+			break;
+		if(abs(currentX - cargo[checkedVars[i]][3]) < minAbs)
+		{
+			minAbs = abs(currentX - cargo[checkedVars[i]][3]);
+			needVar = checkedVars[i];
+		}
+	}
+	return needVar;
+}
 int checkCargo()
 {
 	int n = 0;
@@ -596,7 +681,7 @@ void filling_true_color_mas()
 	{
 		setMotorTarget(colorTrueM, distances[i], 100);
 		waitUntilMotorStop(colorTrueM);
-		true_color[i] = SensorValue(color2);
+		true_color[5-i] = SensorValue(color2);
 		//sleep(500);
 	}
 	setMotorTarget(colorTrueM, 0, 100);
@@ -704,6 +789,171 @@ void refillIncorrectTrueColors()
 		}
 	}
 }
+void setWheels()
+{
+	int pos1 = findPlaceByColor(4);
+	int pos2 = findPlaceByColor(6);
+	if(wheels[0][0] != pos1)
+	{
+		if(wheels[1][0] != pos1)
+		{
+			int cargo1 = find_cargo(pos1, 0);
+			int cargoForStay = findCargoByTypeEx(1,wheels[0][0], wheels[1][0], pos1);
+			movement(cargo1, cargo[cargoForStay][3]);
+			setPositionX(wheels[0][0]);
+			setMotorTarget(height, 700, 100);
+			waitUntilMotorStop(height);
+			motor[hand] = -40;
+			sleep(250);
+			setPositionY(2);
+			setPositionX(pos1);
+			setMotorTarget(height, 800, 100);
+			waitUntilMotorStop(height);
+			setMotorTarget(height, 850, 20);
+			waitUntilMotorStop(height);
+			setMotorTarget(hand, 0, 20);
+		waitUntilMotorStop(hand);
+			setPositionY(2);
+			wheels[0][0] = pos1;
+			wheels[0][1] = 0;
+			movement(cargo1, pos1);
+		}
+		else
+		{
+			int cargo1 = find_cargo(pos1, 0);
+			int cargoForStay = findCargoByTypeEx(1,wheels[0][0], -1, pos1);
+			int cargoForStay1 = findCargoByNotTypeEx(2,wheels[0][0], cargo[cargoForStay][3], pos1);
+			setPositionX(wheels[1][0]);
+			setMotorTarget(height, 700, 100);
+			waitUntilMotorStop(height);
+			motor[hand] = -40;
+			sleep(250);
+			setPositionY(2);
+			setPositionX(cargo[cargoForStay1][3]);
+			setMotorTarget(height, 700, 100);
+			waitUntilMotorStop(height);
+			setMotorTarget(hand, 0, 20);
+		waitUntilMotorStop(hand);
+			setPositionY(2);
+			movement(cargo1, cargo[cargoForStay][3]);
+			setPositionX(wheels[0][0]);
+			setMotorTarget(height, 700, 100);
+			waitUntilMotorStop(height);
+			motor[hand] = -40;
+			sleep(250);
+			setPositionY(2);
+			setPositionX(pos1);
+			setMotorTarget(height, 800, 100);
+			waitUntilMotorStop(height);
+			setMotorTarget(height, 850, 20);
+			waitUntilMotorStop(height);
+			setMotorTarget(hand, 0, 20);
+		waitUntilMotorStop(hand);
+			setPositionY(2);
+			wheels[0][0] = pos1;
+			wheels[0][1] = 0;
+			wheels[1][0] = cargo[cargoForStay1][3];
+			movement(cargo1, pos1);
+		}
+	}
+	else
+	{
+		int cargo1 = find_cargo(pos1, 0);
+		int cargoForStay = findCargoByTypeEx(1,wheels[1][0], -1, pos1);
+		int cargoForStay1 = findCargoByNotTypeEx(2,wheels[1][0], cargo[cargoForStay][3], pos1);
+		setPositionX(wheels[0][0]);
+		setMotorTarget(height, 700, 100);
+		waitUntilMotorStop(height);
+		motor[hand] = -40;
+			sleep(250);
+		setPositionY(2);
+		setPositionX(cargo[cargoForStay1][3]);
+		setMotorTarget(height, 700, 100);
+		waitUntilMotorStop(height);
+		setMotorTarget(hand, 0, 20);
+		waitUntilMotorStop(hand);
+		setPositionY(2);
+		movement(cargo1, cargo[cargoForStay][3]);
+		setPositionX(wheels[0][0]);
+		setMotorTarget(height, 700, 100);
+		waitUntilMotorStop(height);
+		motor[hand] = -40;
+			sleep(250);
+		setPositionY(2);
+		setPositionX(pos1);
+		setMotorTarget(height, 800, 100);
+			waitUntilMotorStop(height);
+			setMotorTarget(height, 850, 20);
+			waitUntilMotorStop(height);
+		setMotorTarget(hand, 0, 20);
+		waitUntilMotorStop(hand);
+		setPositionY(2);
+		wheels[0][0] = pos1;
+		wheels[0][1] = 0;
+		wheels[1][0] = cargo[cargoForStay1][3];
+		movement(cargo1, pos1);
+	}
+	if(wheels[1][0] != pos2)
+	{
+		int cargo1 = find_cargo(pos2, 0);
+		int cargoForStay = findCargoByTypeEx(1,wheels[0][0], wheels[1][0], pos2);
+		movement(cargo1, cargo[cargoForStay][3]);
+		setPositionX(wheels[1][0]);
+		setMotorTarget(height, 700, 100);
+		waitUntilMotorStop(height);
+		motor[hand] = -40;
+			sleep(250);
+		setPositionY(2);
+		setPositionX(pos2);
+		setMotorTarget(height, 800, 100);
+			waitUntilMotorStop(height);
+			setMotorTarget(height, 850, 20);
+			waitUntilMotorStop(height);
+		setMotorTarget(hand, 0, 20);
+		waitUntilMotorStop(hand);;
+		setPositionY(2);
+		wheels[1][0] = pos2;
+		wheels[1][1] = 0;
+		movement(cargo1, pos2);
+	}
+	else
+	{
+		int cargo1 = find_cargo(pos2, 0);
+		int cargoForStay = findCargoByTypeEx(1,wheels[0][0], -1, pos2);
+		int cargoForStay1 = findCargoByNotTypeEx(2,wheels[0][0], cargo[cargoForStay][3], pos2);
+		setPositionX(wheels[1][0]);
+		setMotorTarget(height, 700, 100);
+		waitUntilMotorStop(height);
+		motor[hand] = -40;
+			sleep(250);
+		setPositionY(2);
+		setPositionX(cargo[cargoForStay1][3]);
+		setMotorTarget(height, 700, 100);
+		waitUntilMotorStop(height);
+		setMotorTarget(hand, 0, 20);
+		waitUntilMotorStop(hand);
+		setPositionY(2);
+		movement(cargo1, cargo[cargoForStay][3]);
+		setPositionX(wheels[1][0]);
+		setMotorTarget(height, 700, 100);
+		waitUntilMotorStop(height);
+		motor[hand] = -40;
+			sleep(250);
+		setPositionY(2);
+		setPositionX(pos2);
+		setMotorTarget(height, 800, 100);
+			waitUntilMotorStop(height);
+			setMotorTarget(height, 850, 20);
+			waitUntilMotorStop(height);
+		setMotorTarget(hand, 0, 20);
+		waitUntilMotorStop(hand);
+		setPositionY(2);
+		wheels[1][0] = pos2;
+		wheels[1][1] = 0;
+		movement(cargo1, pos2);
+	}
+}
+
 task main()
 {
 	clearTimer(T1);
@@ -736,14 +986,17 @@ task main()
 
 	//fillTypes(); //turn off this string if you want to start main task
 	displayCenteredTextLine(4,"%d %d %d %d %d %d", types[0], types[1], types[2], types[3], types[4], types[5]);
-	fillTrueColorAdvanced();
-	for(int i = 0; i < 6; i++)
-		true_color[i] = true_color_adv[i];
-	displayCenteredTextLine(6,"%d %d %d %d %d %d",true_color[0], true_color[1], true_color[2], true_color[3], true_color[4], true_color[5]);
+	//fillTrueColorAdvanced();
+	//for(int i = 0; i < 6; i++)
+	//	true_color[i] = true_color_adv[i];
+	//displayCenteredTextLine(6,"%d %d %d %d %d %d",true_color[0], true_color[1], true_color[2], true_color[3], true_color[4], true_color[5]);
 	read_color();
 	read_true_color();
 	true_position();
 	graphing();
+	findWheels();
+	setWheels();
+	displayCenteredTextLine(5,"%d %d; %d %d",wheels[0][0], wheels[0][1],wheels[1][0], wheels[1][1])
 	//    write();
 	while(checkCargo() == 0)
 	{

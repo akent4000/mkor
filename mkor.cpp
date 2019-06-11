@@ -25,7 +25,7 @@ int graph_amount_cube_holl[3];
 int cargo[6][7];
 int getColor();
 int whiteCube;
-int refl = 52;
+int refl = 48;//52;
 int PosEncoder = 450;
 int PosEncoderMin = 160;
 /*
@@ -104,7 +104,8 @@ void setPositionX(int x)
 	if(x > currentX)
 	{
 		motor[width] = -1 * speed;
-		for(int i = currentX; i < x; i++)
+		int i = currentX;
+		for(; i < x; i++)
 		{
 			FirstPosition = getMotorEncoder(width);
 			while(SensorValue[widthT] <= refl)
@@ -129,17 +130,18 @@ void setPositionX(int x)
 					}
 				}
 			}
-		}
-		if(abs(SecondPosition - FirstPosition) <= PosEncoderMin)
-		{
-			i++;
+			if(abs(SecondPosition - FirstPosition) <= PosEncoderMin)
+			{
+				i++;
+			}
 		}
 		motor[width] = 0;
 	}
 	else if(x < currentX)
 	{
 		motor[width] = speed;
-		for(int i = currentX; i > x; i--)
+		int i = currentX;
+		for(; i > x; i--)
 		{
 			FirstPosition = getMotorEncoder(width);
 			while(SensorValue[widthT] <= refl)
@@ -164,10 +166,10 @@ void setPositionX(int x)
 					}
 				}
 			}
-		}
-		if(abs(SecondPosition - FirstPosition) <= PosEncoderMin)
-		{
-			i++;
+			if(abs(SecondPosition - FirstPosition) <= PosEncoderMin)
+			{
+				i++;
+			}
 		}
 		motor[width] = 0;
 	}

@@ -182,7 +182,7 @@ void setPositionX(int x)
 void setPositionY(int y)
 {
 	int pos;
-	int distances[5] = {785, 576, 130, 665, 410};
+	int distances[5] = {785, 576, 230, 665, 410};
 	pos = distances[y];
 	setMotorTarget(height, pos, 100);
 	waitUntilMotorStop(height);
@@ -471,50 +471,28 @@ void movement(int cargo_for_movement, int x)
 			setPositionX(oldX);
 			if(cargosOnOldX == 1)
 			{
-				if(cargo[cargo_for_movement][0] == 3)
-				{
-					setPositionY(3);
-				}
-				else
-				{
-					setPositionY(0);
-				}
+				setPositionY(0);
 			}
 			else if(cargosOnOldX == 2)
 			{
-				if(cargo[cargo_for_movement][0] == 3 || cargo[find_cargo(oldX, 0)][0] == 3)
-				{
-					setPositionY(4);
-				}
-				else
-				{
-					setPositionY(1);
-				}
+				setPositionY(1);
 			}
 			getC();
-			setPositionY(2);
-			//int maxZ = max(check_number_of_cargo_on_pos(x), cargo[cargo_for_movement][4]);
-			//for(int i = 0; i < 6; i++)
-			//{
-			//	if(cargo[i][3] > min(oldX, x) && cargo[i][3] < max(oldX,x))
-			//		maxZ = max(maxZ, cargo[i][4] + 1);
-			//}
-			//if(whiteCube > min(oldX, x) && whiteCube < max(oldX, x))
-			//	maxZ = 2;
-			//setPositionY(maxZ);
-			//if(maxZ != 2)
-			//{
-			//	upHand();
-			//}
+			int maxZ = max(check_number_of_cargo_on_pos(x), cargo[cargo_for_movement][4]);
+			for(int i = 0; i < 6; i++)
+			{
+				if(cargo[i][3] > min(oldX, x) && cargo[i][3] < max(oldX,x))
+					maxZ = max(maxZ, cargo[i][4] + 1);
+			}
+			if(whiteCube > min(oldX, x) && whiteCube < max(oldX, x))
+				maxZ = 2;
+			setPositionY(maxZ);
+			if(maxZ != 2)
+			{
+				upHand();
+			}
 			setPositionX(x);
-			if(cargo[cargo_for_movement][0] == 3 || cargo[find_cargo(x, 0)][0] == 3)
-			{
-				setPositionY(3);
-			}
-			else
-			{
-				setPositionY(0);
-			}
+			setPositionY(0);
 			setC();
 			setPositionY(2);
 			cargo[cargo_for_movement][3] = x;
@@ -528,50 +506,28 @@ void movement(int cargo_for_movement, int x)
 				setPositionX(oldX);
 				if(cargosOnOldX == 1)
 				{
-					if(cargo[cargo_for_movement][0] == 3)
-					{
-						setPositionY(3);
-					}
-					else
-					{
-						setPositionY(0);
-					}
+					setPositionY(0);
 				}
 				else if(cargosOnOldX == 2)
 				{
-					if(cargo[cargo_for_movement][0] == 3 || cargo[find_cargo(oldX, 0)][0] == 3)
-					{
-						setPositionY(4);
-					}
-					else
-					{
-						setPositionY(1);
-					}
-				}
-				getC();
-				setPositionY(2);
-				//int maxZ = max(check_number_of_cargo_on_pos(x), cargo[cargo_for_movement][4]);
-				//for(int i = 0; i < 6; i++)
-				//{
-				//	if(cargo[i][3] > min(oldX, x) && cargo[i][3] < max(oldX,x))
-				//		maxZ = max(maxZ, cargo[i][4] + 1);
-				//}
-				//if(whiteCube > min(oldX, x) && whiteCube < max(oldX, x))
-				//	maxZ = 2;
-				//setPositionY(maxZ);
-				//if(maxZ != 2)
-				//{
-				//	upHand();
-				//}
-				setPositionX(x);
-				if(cargo[cargo_for_movement][0] == 3 || cargo[find_cargo(x, 0)][0] == 3)
-				{
-					setPositionY(4);
-				}
-				else
-				{
 					setPositionY(1);
 				}
+				getC();
+				int maxZ = max(check_number_of_cargo_on_pos(x), cargo[cargo_for_movement][4]);
+				for(int i = 0; i < 6; i++)
+				{
+					if(cargo[i][3] > min(oldX, x) && cargo[i][3] < max(oldX,x))
+						maxZ = max(maxZ, cargo[i][4] + 1);
+				}
+				if(whiteCube > min(oldX, x) && whiteCube < max(oldX, x))
+					maxZ = 2;
+				setPositionY(maxZ);
+				if(maxZ != 2)
+				{
+					upHand();
+				}
+				setPositionX(x);
+				setPositionY(1);
 				setC();
 				cargo[find_cargo(x,0)][5] = cargo_for_movement;
 				cargo[cargo_for_movement][3] = x;
@@ -749,40 +705,6 @@ void filling_color_mas()
 	{
 		setPositionX(i);
 		color[i] = getColor();
-		if(color[i] == 1)
-		{
-			setPositionY(0);
-			getC();
-			sleep(500);
-			if(getMotorEncoder(hand) < -60)
-			{
-				color[i] = 9;
-			}
-			setC();
-			setPositionY(2);
-		}
-	}
-}
-
-void checkColorMas()
-{
-	int varVoid = 10;
-	int sum = 21;
-	for(int i = 0; i < 6; i++)
-	{
-		if(color[i] == 9)
-		{
-			varVoid = i;
-		}
-		else
-		{
-			sum -= color[i];
-		}
-	}
-	if(varVoid != 10)
-	{
-		color[varVoid] = sum;
-		types[color[varVoid] - 1] = 2;
 	}
 }
 
@@ -913,7 +835,23 @@ int find_place_cargo_by_color(int color_for_search)
 	for(; color[i] != color_for_search; i++);
 	return i;
 }
-
+int getMaxCargosByType(int type)
+{
+	int res = 0;
+	if(type != 4)
+	{
+		for(int i = 0; i < 6; i++)
+			if(types[i] == type)
+				res++;
+	}
+	else
+	{
+		for(int i = 0; i < 6; i++)
+			if(types[i] == 0 || types[i] == 1)
+				res++;
+	}
+	return res;
+}
 task main()
 {
 	clearTimer(T1);
@@ -930,11 +868,9 @@ task main()
 	SensorMode[widthT] = modeEV3Color_Reflected;
 
 	filling_color_mas();
-	checkColorMas();
 	do
 	{
 		refillIncorrectColors();
-		checkColorMas();
 		displayCenteredTextLine(1,"%d %d %d %d %d %d",color[0], color[1], color[2], color[3], color[4], color[5]);
 	}
 	while(checkColorMassiveToCorrect() == false);
@@ -956,7 +892,7 @@ task main()
 	{
 		for(int i = 0; i < 3; i++)
 		{
-			if(graph_amount_cubes[i] == 4)
+			if(graph_amount_cubes[i] == getMaxCargosByType(4))
 			{
 
 				int cargoForMove = findCargoByNotTypeInGraph(2,i, -1, -1);
@@ -969,7 +905,7 @@ task main()
 				movement(cargoForRemove, oldX);
 				movement(cargoForMove, newX);
 			}
-			else if(graph_amount_ball[i] == 2 && graph_size[i] == 2)
+			else if(graph_amount_ball[i] == graph_size[i])
 			{
 				int cargoForMove1 = findCargoByTypeInGraph(2,i,-1,-1);
 				int cargoForMove2 = findCargoByTypeInGraph(2,i,cargo[cargoForMove1][3],-1);
@@ -997,96 +933,6 @@ task main()
 				movement(cargoForMoveOut, cargo[cargoForMoveOut][2]);
 			}
 			graphing();
-		}
-	}
-	int temp = 21;
-	for(int i = 0; i < 6; i++)
-	{
-		if(color[i] != 9)
-		{
-			temp -= color[i];
-		}
-	}
-	if(temp != 1)
-	{
-		if(temp != 4 && temp != 6)
-		{
-			movement(find_cargo_by_color(4), cargo[find_cargo_by_color(3)][3]);
-			movement(find_cargo_by_color(6), cargo[find_cargo_by_color(1)][3]);
-		}
-		else if(temp == 6)
-		{
-			movement(find_cargo_by_color(4), cargo[find_cargo_by_color(3)][3]);
-		}
-		else if(temp == 4)
-		{
-			movement(find_cargo_by_color(6), cargo[find_cargo_by_color(3)][3]);
-		}
-		else if(temp == 3)
-		{
-			int xWhite = 0;
-			for(; color[xWhite] != 6; xWhite++);
-			int xYellow = 0;
-			for(; color[xYellow] != 4; xYellow++);
-			int xBlack = 0;
-			for(; color[xBlack] != 6; xBlack++);
-
-			if(abs(xBlack - xWhite) > abs(xBlack - xYellow))
-			{
-				movement(find_cargo_by_color(4), cargo[find_cargo_by_color(1)][3]);
-			}
-			else if(abs(xBlack - xWhite) < abs(xBlack - xYellow))
-			{
-				movement(find_cargo_by_color(6), cargo[find_cargo_by_color(1)][3]);
-			}
-			else if(abs(xBlack - xWhite) == abs(xBlack - xYellow))
-			{
-				if(abs(findPlaceByColor(1)) > abs(findPlaceByColor(4)))
-				{
-					movement(find_cargo_by_color(4), cargo[find_cargo_by_color(1)][3]);
-				}
-				else if(abs(findPlaceByColor(1)) < abs(findPlaceByColor(4)))
-				{
-					movement(find_cargo_by_color(6), cargo[find_cargo_by_color(1)][3]);
-				}
-				else if(abs(findPlaceByColor(1)) == abs(findPlaceByColor(4)))
-				{
-
-				}
-			}
-		}
-	}
-	else if(temp == 1)
-	{
-		int xWhite = 0;
-		for(; color[xWhite] != 6; xWhite++);
-		int xYellow = 0;
-		for(; color[xYellow] != 4; xYellow++);
-		int xGreen = 0;
-		for(; color[xGreen] != 6; xGreen++);
-
-		if(abs(xGreen - xWhite) > abs(xGreen - xYellow))
-		{
-			movement(find_cargo_by_color(4), cargo[find_cargo_by_color(3)][3]);
-		}
-		else if(abs(xGreen - xWhite) < abs(xGreen - xYellow))
-		{
-			movement(find_cargo_by_color(6), cargo[find_cargo_by_color(3)][3]);
-		}
-		else if(abs(xGreen - xWhite) == abs(xGreen - xYellow))
-		{
-			if(abs(findPlaceByColor(3)) > abs(findPlaceByColor(4)))
-			{
-				movement(find_cargo_by_color(4), cargo[find_cargo_by_color(3)][3]);
-			}
-			else if(abs(findPlaceByColor(3)) < abs(findPlaceByColor(4)))
-			{
-				movement(find_cargo_by_color(6), cargo[find_cargo_by_color(3)][3]);
-			}
-			else if(abs(findPlaceByColor(3)) == abs(findPlaceByColor(4)))
-			{
-
-			}
 		}
 	}
 	setMotorTarget(width, 0, 100);

@@ -182,7 +182,7 @@ void setPositionX(int x)
 void setPositionY(int y)
 {
 	int pos;
-	int distances[3] = {785,576,230};
+	int distances[5] = {785, 576, 130, 665, 410};
 	pos = distances[y];
 	setMotorTarget(height, pos, 100);
 	waitUntilMotorStop(height);
@@ -471,28 +471,50 @@ void movement(int cargo_for_movement, int x)
 			setPositionX(oldX);
 			if(cargosOnOldX == 1)
 			{
-				setPositionY(0);
+				if(cargo[cargo_for_movement][0] == 3)
+				{
+					setPositionY(3);
+				}
+				else
+				{
+					setPositionY(0);
+				}
 			}
 			else if(cargosOnOldX == 2)
 			{
-				setPositionY(1);
+				if(cargo[cargo_for_movement][0] == 3 || cargo[find_cargo(oldX, 0)][0] == 3)
+				{
+					setPositionY(4);
+				}
+				else
+				{
+					setPositionY(1);
+				}
 			}
 			getC();
-			int maxZ = max(check_number_of_cargo_on_pos(x), cargo[cargo_for_movement][4]);
-			for(int i = 0; i < 6; i++)
-			{
-				if(cargo[i][3] > min(oldX, x) && cargo[i][3] < max(oldX,x))
-					maxZ = max(maxZ, cargo[i][4] + 1);
-			}
-			if(whiteCube > min(oldX, x) && whiteCube < max(oldX, x))
-				maxZ = 2;
-			setPositionY(maxZ);
-			if(maxZ != 2)
-			{
-				upHand();
-			}
+			setPositionY(2);
+			//int maxZ = max(check_number_of_cargo_on_pos(x), cargo[cargo_for_movement][4]);
+			//for(int i = 0; i < 6; i++)
+			//{
+			//	if(cargo[i][3] > min(oldX, x) && cargo[i][3] < max(oldX,x))
+			//		maxZ = max(maxZ, cargo[i][4] + 1);
+			//}
+			//if(whiteCube > min(oldX, x) && whiteCube < max(oldX, x))
+			//	maxZ = 2;
+			//setPositionY(maxZ);
+			//if(maxZ != 2)
+			//{
+			//	upHand();
+			//}
 			setPositionX(x);
-			setPositionY(0);
+			if(cargo[cargo_for_movement][0] == 3 || cargo[find_cargo(x, 0)][0] == 3)
+			{
+				setPositionY(3);
+			}
+			else
+			{
+				setPositionY(0);
+			}
 			setC();
 			setPositionY(2);
 			cargo[cargo_for_movement][3] = x;
@@ -506,28 +528,50 @@ void movement(int cargo_for_movement, int x)
 				setPositionX(oldX);
 				if(cargosOnOldX == 1)
 				{
-					setPositionY(0);
+					if(cargo[cargo_for_movement][0] == 3)
+					{
+						setPositionY(3);
+					}
+					else
+					{
+						setPositionY(0);
+					}
 				}
 				else if(cargosOnOldX == 2)
 				{
-					setPositionY(1);
+					if(cargo[cargo_for_movement][0] == 3 || cargo[find_cargo(oldX, 0)][0] == 3)
+					{
+						setPositionY(4);
+					}
+					else
+					{
+						setPositionY(1);
+					}
 				}
 				getC();
-				int maxZ = max(check_number_of_cargo_on_pos(x), cargo[cargo_for_movement][4]);
-				for(int i = 0; i < 6; i++)
-				{
-					if(cargo[i][3] > min(oldX, x) && cargo[i][3] < max(oldX,x))
-						maxZ = max(maxZ, cargo[i][4] + 1);
-				}
-				if(whiteCube > min(oldX, x) && whiteCube < max(oldX, x))
-					maxZ = 2;
-				setPositionY(maxZ);
-				if(maxZ != 2)
-				{
-					upHand();
-				}
+				setPositionY(2);
+				//int maxZ = max(check_number_of_cargo_on_pos(x), cargo[cargo_for_movement][4]);
+				//for(int i = 0; i < 6; i++)
+				//{
+				//	if(cargo[i][3] > min(oldX, x) && cargo[i][3] < max(oldX,x))
+				//		maxZ = max(maxZ, cargo[i][4] + 1);
+				//}
+				//if(whiteCube > min(oldX, x) && whiteCube < max(oldX, x))
+				//	maxZ = 2;
+				//setPositionY(maxZ);
+				//if(maxZ != 2)
+				//{
+				//	upHand();
+				//}
 				setPositionX(x);
-				setPositionY(1);
+				if(cargo[cargo_for_movement][0] == 3 || cargo[find_cargo(x, 0)][0] == 3)
+				{
+					setPositionY(4);
+				}
+				else
+				{
+					setPositionY(1);
+				}
 				setC();
 				cargo[find_cargo(x,0)][5] = cargo_for_movement;
 				cargo[cargo_for_movement][3] = x;
@@ -705,8 +749,43 @@ void filling_color_mas()
 	{
 		setPositionX(i);
 		color[i] = getColor();
+		if(color[i] == 1)
+		{
+			setPositionY(0);
+			getC();
+			sleep(500);
+			if(getMotorEncoder(hand) < -60)
+			{
+				color[i] = 9;
+			}
+			setC();
+			setPositionY(2);
+		}
 	}
 }
+
+void checkColorMas()
+{
+	int varVoid = 10;
+	int sum = 21;
+	for(int i = 0; i < 6; i++)
+	{
+		if(color[i] == 9)
+		{
+			varVoid = i;
+		}
+		else
+		{
+			sum -= color[i];
+		}
+	}
+	if(varVoid != 10)
+	{
+		color[varVoid] = sum;
+		types[color[varVoid] - 1] = 2;
+	}
+}
+
 void filling_true_color_mas()
 {
 	int distances[6] = {-857,-747,-636,-512,-399,-284};
@@ -918,6 +997,96 @@ task main()
 				movement(cargoForMoveOut, cargo[cargoForMoveOut][2]);
 			}
 			graphing();
+		}
+	}
+	int temp = 21;
+	for(int i = 0; i < 6; i++)
+	{
+		if(color[i] != 9)
+		{
+			temp -= color[i];
+		}
+	}
+	if(temp != 1)
+	{
+		if(temp != 4 && temp != 6)
+		{
+			movement(find_cargo_by_color(4), cargo[find_cargo_by_color(3)][3]);
+			movement(find_cargo_by_color(6), cargo[find_cargo_by_color(1)][3]);
+		}
+		else if(temp == 6)
+		{
+			movement(find_cargo_by_color(4), cargo[find_cargo_by_color(3)][3]);
+		}
+		else if(temp == 4)
+		{
+			movement(find_cargo_by_color(6), cargo[find_cargo_by_color(3)][3]);
+		}
+		else if(temp == 3)
+		{
+			int xWhite = 0;
+			for(; color[xWhite] != 6; xWhite++);
+			int xYellow = 0;
+			for(; color[xYellow] != 4; xYellow++);
+			int xBlack = 0;
+			for(; color[xBlack] != 6; xBlack++);
+
+			if(abs(xBlack - xWhite) > abs(xBlack - xYellow))
+			{
+				movement(find_cargo_by_color(4), cargo[find_cargo_by_color(1)][3]);
+			}
+			else if(abs(xBlack - xWhite) < abs(xBlack - xYellow))
+			{
+				movement(find_cargo_by_color(6), cargo[find_cargo_by_color(1)][3]);
+			}
+			else if(abs(xBlack - xWhite) == abs(xBlack - xYellow))
+			{
+				if(abs(findPlaceByColor(1)) > abs(findPlaceByColor(4)))
+				{
+					movement(find_cargo_by_color(4), cargo[find_cargo_by_color(1)][3]);
+				}
+				else if(abs(findPlaceByColor(1)) < abs(findPlaceByColor(4)))
+				{
+					movement(find_cargo_by_color(6), cargo[find_cargo_by_color(1)][3]);
+				}
+				else if(abs(findPlaceByColor(1)) == abs(findPlaceByColor(4)))
+				{
+
+				}
+			}
+		}
+	}
+	else if(temp == 1)
+	{
+		int xWhite = 0;
+		for(; color[xWhite] != 6; xWhite++);
+		int xYellow = 0;
+		for(; color[xYellow] != 4; xYellow++);
+		int xGreen = 0;
+		for(; color[xGreen] != 6; xGreen++);
+
+		if(abs(xGreen - xWhite) > abs(xGreen - xYellow))
+		{
+			movement(find_cargo_by_color(4), cargo[find_cargo_by_color(3)][3]);
+		}
+		else if(abs(xGreen - xWhite) < abs(xGreen - xYellow))
+		{
+			movement(find_cargo_by_color(6), cargo[find_cargo_by_color(3)][3]);
+		}
+		else if(abs(xGreen - xWhite) == abs(xGreen - xYellow))
+		{
+			if(abs(findPlaceByColor(3)) > abs(findPlaceByColor(4)))
+			{
+				movement(find_cargo_by_color(4), cargo[find_cargo_by_color(3)][3]);
+			}
+			else if(abs(findPlaceByColor(3)) < abs(findPlaceByColor(4)))
+			{
+				movement(find_cargo_by_color(6), cargo[find_cargo_by_color(3)][3]);
+			}
+			else if(abs(findPlaceByColor(3)) == abs(findPlaceByColor(4)))
+			{
+
+			}
 		}
 	}
 	setMotorTarget(width, 0, 100);

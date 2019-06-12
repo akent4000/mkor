@@ -705,39 +705,6 @@ void filling_color_mas()
 	{
 		setPositionX(i);
 		color[i] = getColor();
-		if(color[i] == 1)
-		{
-			setPositionY(0);
-			getC();
-			sleep(500);
-			if(getMotorEncoder(hand) < -60)
-			{
-				color[i] = 9;
-			}
-			setC();
-			setPositionY(2);
-		}
-	}
-}
-void checkColorMas()
-{
-	int varVoid = 10;
-	int sum = 21;
-	for(int i = 0; i < 6; i++)
-	{
-		if(color[i] == 9)
-		{
-			varVoid = i;
-		}
-		else
-		{
-			sum -= color[i];
-		}
-	}
-	if(varVoid != 10)
-	{
-	color[varVoid] = sum;
-	types[color[varVoid] - 1] = 2;
 	}
 }
 void filling_true_color_mas()

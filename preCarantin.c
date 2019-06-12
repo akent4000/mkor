@@ -1,4 +1,4 @@
-#pragma config(Sensor, S1,     color2,         sensorEV3_Color, modeEV3Color_Color)
+ #pragma config(Sensor, S1,     color2,         sensorEV3_Color, modeEV3Color_Color)
 #pragma config(Sensor, S2,     indicatorOfZeroPos, sensorColorNxtRED)
 #pragma config(Sensor, S3,     widthT,         sensorEV3_Color, modeEV3Color_Color)
 #pragma config(Sensor, S4,     color1,         sensorI2CCustom)

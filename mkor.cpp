@@ -132,7 +132,7 @@ void setPositionX(int x)
 			}
 			if(abs(SecondPosition - FirstPosition) <= PosEncoderMin)
 			{
-				i++;
+				i--;
 			}
 		}
 		motor[width] = 0;
@@ -191,7 +191,6 @@ void upHand()
 {
 	moveMotorTarget(height, 180, -100);
 	waitUntilMotorStop(height);
-	//writeDebugStreamLine("Im doing it");
 }
 void getC()
 {
@@ -458,41 +457,14 @@ int findCargoByNotTypeEx(int type, int excludeX1, int excludeX2, int excludeX3)
 	}
 	return needVar;
 }
+
 void movement(int cargo_for_movement, int x)
 {
+	setPositionY(2);
 	if(cargo[cargo_for_movement][5] == -1 && cargo[cargo_for_movement][3] != x)
 	{
 		int oldX = cargo[cargo_for_movement][3];
 		int cargosOnOldX = check_number_of_cargo_on_pos(oldX);
-		if(whiteCube == oldX || whiteCube == x)
-		{
-			if(whiteCube == oldX)
-			{
-				int cargoForStay = findCargoByNotTypeEx(2, oldX, x, -1);
-				setPositionX(oldX);
-				setPositionY(1);
-				getC();
-				setPositionY(2);
-				setPositionX(cargo[cargoForStay][3]);
-				setPositionY(1);
-				setC();
-				setPositionY(2);
-				whiteCube = cargo[cargoForStay][3];
-			}
-			else if(whiteCube == x)
-			{
-				int cargoForStay = findCargoByNotTypeEx(2, oldX, x, -1);
-				setPositionX(x);
-				setPositionY(1);
-				getC();
-				setPositionY(2);
-				setPositionX(cargo[cargoForStay][3]);
-				setPositionY(1);
-				setC();
-				setPositionY(2);
-				whiteCube = cargo[cargoForStay][3];
-			}
-		}
 		int cargosOnX = check_number_of_cargo_on_pos(x);
 		if(cargosOnX == 0)
 		{
@@ -515,7 +487,6 @@ void movement(int cargo_for_movement, int x)
 			if(whiteCube > min(oldX, x) && whiteCube < max(oldX, x))
 				maxZ = 2;
 			setPositionY(maxZ);
-			//writeDebugStreamLine("%d", maxZ);
 			if(maxZ != 2)
 			{
 				upHand();
@@ -528,7 +499,7 @@ void movement(int cargo_for_movement, int x)
 			cargo[cargo_for_movement][4] = 0;
 
 		}
-		else if(cargosOnOldX == 1)
+		else
 		{
 			if(check_stay(cargo_for_movement, find_cargo(x,0)) == 1)
 			{
@@ -551,7 +522,6 @@ void movement(int cargo_for_movement, int x)
 				if(whiteCube > min(oldX, x) && whiteCube < max(oldX, x))
 					maxZ = 2;
 				setPositionY(maxZ);
-				//writeDebugStreamLine("%d", maxZ);
 				if(maxZ != 2)
 				{
 					upHand();
@@ -559,7 +529,6 @@ void movement(int cargo_for_movement, int x)
 				setPositionX(x);
 				setPositionY(1);
 				setC();
-				setPositionY(2);
 				cargo[find_cargo(x,0)][5] = cargo_for_movement;
 				cargo[cargo_for_movement][3] = x;
 				cargo[cargo_for_movement][4] = 1;
@@ -571,6 +540,7 @@ void movement(int cargo_for_movement, int x)
 		}
 		true_position();
 	}
+	setPositionY(2);
 }
 int findGraphByCargo(int cargoForSearch)
 {
@@ -723,25 +693,7 @@ void returnToZero()
 	motor[width] = -50;
 	int FirstPosition = getMotorEncoder(width);
 	while(SensorValue[widthT] <= refl);
-	//{
-	//	int SecondPosition = getMotorEncoder(width);
-	//	if(abs(SecondPosition - FirstPosition) >= PosEncoder)
-	//	{
-	//		break;
-	//		motor[width] = 20;
-	//	}
-	//}
 	while(SensorValue[widthT] > refl);
-	//{
-	//	{
-	//		int SecondPosition = getMotorEncoder(width);
-	//		if(abs(SecondPosition - FirstPosition) >= PosEncoder)
-	//		{
-	//			motor[width] = 20;
-	//		}
-	//	}
-	//}
-
 	motor[width] = 0;
 	currentX = 5;
 }
@@ -752,11 +704,42 @@ void filling_color_mas()
 	for(int i = 5; i >= 0; i--)
 	{
 		setPositionX(i);
-		//sleep(500);
 		color[i] = getColor();
+		if(color[i] == 1)
+		{
+			setPositionY(0);
+			getC();
+			sleep(500);
+			if(getMotorEncoder(hand) < -60)
+			{
+				color[i] = 9;
+			}
+			setC();
+			setPositionY(2);
+		}
 	}
 }
-
+void checkColorMas()
+{
+	int varVoid = 10;
+	int sum = 21;
+	for(int i = 0; i < 6; i++)
+	{
+		if(color[i] == 9)
+		{
+			varVoid = i;
+		}
+		else
+		{
+			sum -= color[i];
+		}
+	}
+	if(varVoid != 10)
+	{
+	color[varVoid] = sum;
+	types[color[varVoid] - 1] = 2;
+	}
+}
 void filling_true_color_mas()
 {
 	int distances[6] = {-857,-747,-636,-512,-399,-284};
@@ -765,7 +748,6 @@ void filling_true_color_mas()
 		setMotorTarget(colorTrueM, distances[i], 100);
 		waitUntilMotorStop(colorTrueM);
 		true_color[i] = SensorValue(color2);
-		//sleep(500);
 	}
 	setMotorTarget(colorTrueM, 0, 100);
 }
@@ -872,16 +854,20 @@ void refillIncorrectTrueColors()
 		}
 	}
 }
-int xPosWhiteCube;
-int xWhiteCube()
+int find_cargo_by_color(int color_for_search)
 {
-	for(int i = 0; i < 6; i++)
-	{
-		if(color[i] == 4)
-			return i;
-	}
-	return -1;
+	int i = 0;
+	for(; cargo[i][0] != color_for_search; i++);
+	return i;
 }
+
+int find_place_cargo_by_color(int color_for_search)
+{
+	int i = 0;
+	for(; color[i] != color_for_search; i++);
+	return i;
+}
+
 task main()
 {
 	clearTimer(T1);
@@ -893,42 +879,33 @@ task main()
 	waitUntilMotorStop(width);
 	returnToZero();
 	SensorMode[widthT] = modeEV3Color_Color;
-	//setMotorTarget(width, 121, 80);
-	//setMotorTarget(height, 654, 80);
-	//waitUntilMotorStop(width);
-	//waitUntilMotorStop(height);
-	//SensorType[indicatorOfZeroPos] = sensorColorNxtBLUE;
-	//while(getButtonPress(buttonEnter) == false);
-	//SensorType[indicatorOfZeroPos] = sensorColorNxtRED;
 	setPositionY(2);
+
 	SensorMode[widthT] = modeEV3Color_Reflected;
+
 	filling_color_mas();
+	checkColorMas();
 	do
 	{
 		refillIncorrectColors();
+		checkColorMas();
 		displayCenteredTextLine(1,"%d %d %d %d %d %d",color[0], color[1], color[2], color[3], color[4], color[5]);
-	}while(checkColorMassiveToCorrect() == false);
+	}
+	while(checkColorMassiveToCorrect() == false);
 	filling_true_color_mas();
 	do
 	{
 		refillIncorrectTrueColors();
 		displayCenteredTextLine(2,"%d %d %d %d %d %d",true_color[0], true_color[1], true_color[2], true_color[3], true_color[4], true_color[5]);
-	}while(checkTrueColorMassiveToCorrect() == false);
+	}
+	while(checkTrueColorMassiveToCorrect() == false);
 	setMotorTarget(colorTrueM, 0 ,100);
-
-	//fillTypes(); //turn off this string if you want to start main task
 	displayCenteredTextLine(4,"%d %d %d %d %d %d", types[0], types[1], types[2], types[3], types[4], types[5]);
-	//fillTrueColorAdvanced();
-	//for(int i = 0; i < 6; i++)
-	//	true_color[i] = true_color_adv[i];
 	displayCenteredTextLine(6,"%d %d %d %d %d %d",true_color[0], true_color[1], true_color[2], true_color[3], true_color[4], true_color[5]);
-	whiteCube = findPlaceByColor(6);
-	xPosWhiteCube = xWhiteCube();
 	read_color();
 	read_true_color();
 	true_position();
 	graphing();
-	//    write();
 	while(checkCargo() == 0)
 	{
 		for(int i = 0; i < 3; i++)
@@ -943,11 +920,8 @@ task main()
 				int newX = cargo[cargoForRemove][3];
 				int middleX = cargo[cargoForStay][3];
 				movement(cargoForMove, middleX);
-				//            write();
 				movement(cargoForRemove, oldX);
-				//            write();
 				movement(cargoForMove, newX);
-				//            write();
 			}
 			else if(graph_amount_ball[i] == 2 && graph_size[i] == 2)
 			{
@@ -957,13 +931,9 @@ task main()
 				int X1 = cargo[cargoForMove1][3];
 				int X2 = cargo[cargoForMove2][3];
 				int middleX = cargo[cargoForStay][3];
-				//            printf("1: %d 2: %d 3: %d",cargoForMove1,cargoForMove2,cargoForStay);
 				movement(cargoForMove1, middleX);
-				//            write();
 				movement(cargoForMove2, X1);
-				//            write();
 				movement(cargoForMove1, X2);
-				//            write();
 			}
 			else if(graph_size[i] != 0)
 			{
@@ -977,26 +947,14 @@ task main()
 					int temp = cargo[cargoForMove][3];
 					movement(cargoForMove, cargo[cargoForMove][2]);
 					currentDestinstion = temp;
-					//                write();
 				}
 				movement(cargoForMoveOut, cargo[cargoForMoveOut][2]);
 			}
 			graphing();
 		}
 	}
-	if(whiteCube != xPosWhiteCube)
-	{
-		setPositionX(whiteCube);
-		setPositionY(1);
-		getC();
-		setPositionY(2);
-		setPositionX(xPosWhiteCube);
-		setPositionY(1);
-		setC();
-		setPositionY(2);
-	}
-	setMotorTarget(width, 121, 100);
-	setMotorTarget(height, 300/*654*/, 100);
+	setMotorTarget(width, 0, 100);
+	setMotorTarget(height, 300, 100);
 	waitUntilMotorStop(colorTrueM);
 	waitUntilMotorStop(width);
 	waitUntilMotorStop(height);

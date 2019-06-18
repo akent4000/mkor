@@ -478,14 +478,14 @@ void movement(int cargo_for_movement, int x)
 				setPositionY(1);
 			}
 			getC();
+			
 			int maxZ = max(check_number_of_cargo_on_pos(x), cargo[cargo_for_movement][4]);
 			for(int i = 0; i < 6; i++)
 			{
 				if(cargo[i][3] > min(oldX, x) && cargo[i][3] < max(oldX,x))
 					maxZ = max(maxZ, cargo[i][4] + 1);
 			}
-			if(whiteCube > min(oldX, x) && whiteCube < max(oldX, x))
-				maxZ = 2;
+			
 			setPositionY(maxZ);
 			if(maxZ != 2)
 			{
@@ -499,7 +499,7 @@ void movement(int cargo_for_movement, int x)
 			cargo[cargo_for_movement][4] = 0;
 
 		}
-		else
+		else if(cargosOnX == 1)
 		{
 			if(check_stay(cargo_for_movement, find_cargo(x,0)) == 1)
 			{
@@ -513,19 +513,19 @@ void movement(int cargo_for_movement, int x)
 					setPositionY(1);
 				}
 				getC();
+				
 				int maxZ = max(check_number_of_cargo_on_pos(x), cargo[cargo_for_movement][4]);
 				for(int i = 0; i < 6; i++)
 				{
 					if(cargo[i][3] > min(oldX, x) && cargo[i][3] < max(oldX,x))
 						maxZ = max(maxZ, cargo[i][4] + 1);
 				}
-				if(whiteCube > min(oldX, x) && whiteCube < max(oldX, x))
-					maxZ = 2;
 				setPositionY(maxZ);
 				if(maxZ != 2)
 				{
 					upHand();
 				}
+				
 				setPositionX(x);
 				setPositionY(1);
 				setC();
@@ -540,7 +540,6 @@ void movement(int cargo_for_movement, int x)
 		}
 		true_position();
 	}
-	setPositionY(2);
 }
 int findGraphByCargo(int cargoForSearch)
 {
@@ -862,7 +861,6 @@ task main()
 	moveMotorTarget(width, 150, 100);
 	waitUntilMotorStop(width);
 	returnToZero();
-	SensorMode[widthT] = modeEV3Color_Color;
 	setPositionY(2);
 
 	SensorMode[widthT] = modeEV3Color_Reflected;
@@ -874,6 +872,7 @@ task main()
 		displayCenteredTextLine(1,"%d %d %d %d %d %d",color[0], color[1], color[2], color[3], color[4], color[5]);
 	}
 	while(checkColorMassiveToCorrect() == false);
+	
 	filling_true_color_mas();
 	do
 	{
@@ -881,6 +880,7 @@ task main()
 		displayCenteredTextLine(2,"%d %d %d %d %d %d",true_color[0], true_color[1], true_color[2], true_color[3], true_color[4], true_color[5]);
 	}
 	while(checkTrueColorMassiveToCorrect() == false);
+	
 	setMotorTarget(colorTrueM, 0 ,100);
 	displayCenteredTextLine(4,"%d %d %d %d %d %d", types[0], types[1], types[2], types[3], types[4], types[5]);
 	displayCenteredTextLine(6,"%d %d %d %d %d %d",true_color[0], true_color[1], true_color[2], true_color[3], true_color[4], true_color[5]);
